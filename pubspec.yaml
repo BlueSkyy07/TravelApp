@@ -1,0 +1,43 @@
+name: exam
+description: "A new Flutter project."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  ### commont plugin for any proj
+  intl: ^0.19.0
+  http: ^0.13.4
+  provider: ^6.0.3
+  google_fonts: ^4.0.3
+  get: ^4.6.5
+  get_storage: ^2.0.3
+  responsive_framework: ^0.2.0
+  connectivity_plus: ^3.0.2
+  cached_network_image: ^3.2.1
+  flutter_svg: ^1.1.6
+  flutter_cache_manager: ^3.3.1
+  #use icon by font
+  font_awesome_flutter: ^10.4.0
+  convex_bottom_bar: ^3.2.0
+  ###
+  percent_indicator: ^4.2.3
+  flutter_rating_bar: ^4.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/fonts/
