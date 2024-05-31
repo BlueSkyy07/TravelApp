@@ -96,3 +96,4 @@ const kCategoriesColors = [
   Color(0xFFF88756),
 ];
 const fsearch = Color(0xFFEFF3FA);
+const lich = Color(0xFFF7CA08);

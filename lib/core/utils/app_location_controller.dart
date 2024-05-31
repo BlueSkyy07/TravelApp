@@ -63,10 +63,13 @@ class LocationController extends GetxController {
     if (query.isEmpty) {
       searchResults.value = [];
     } else {
-      searchResults.value = posts
-          .where((location) =>
-              location.category!.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      searchResults.value = posts.where((location) {
+        final lowerQuery = query.toLowerCase();
+        return (location.category?.toLowerCase().contains(lowerQuery) ??
+                false) ||
+            (location.title?.toLowerCase().contains(lowerQuery) ?? false) ||
+            (location.location?.toLowerCase().contains(lowerQuery) ?? false);
+      }).toList();
       print(searchResults);
     }
   }

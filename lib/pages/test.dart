@@ -24,7 +24,6 @@ class TestPage extends StatelessWidget {
                       .where((post) =>
                           account.favorite?.contains(post.id) ?? false)
                       .toList();
-
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

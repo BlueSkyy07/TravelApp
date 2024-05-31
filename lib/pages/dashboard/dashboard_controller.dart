@@ -5,6 +5,7 @@ import 'package:exam/core/utils/app_utility.dart';
 import 'package:exam/core/values/image.dart';
 import 'package:exam/pages/search_page.dart';
 import 'package:exam/pages/test.dart';
+import 'package:exam/pages/testlich.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -356,9 +357,13 @@ class DashboardController extends FullLifeCycleController
       Container(
         color: Colors.red,
       ),
-      Container(
-        color: Colors.yellow,
-      ),
+      SingleChildScrollView(
+          child: ElevatedButton(
+        onPressed: () {
+          Get.to(TestLich());
+        },
+        child: Text('data'),
+      )),
       Container(
         color: Colors.green,
       ),
@@ -449,7 +454,7 @@ Widget buildLocationCard(
     child: Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.red),
+          border: Border.all(width: 1, color: Colors.black12),
           borderRadius: BorderRadius.all(Radius.circular(24))),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       height: 160,
