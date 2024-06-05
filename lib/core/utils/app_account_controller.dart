@@ -8,7 +8,10 @@ class AccountController extends GetxController {
   var isLoading = false.obs;
   var account = Account().obs;
   RxList<Account> favoriteResults = RxList<Account>();
-
+  RxString idAccount = ''.obs;
+  RxString username = ''.obs;
+  RxString schedule = ''.obs;
+  var favorite = <String>['5', '4', '2'].obs;
   @override
   void onInit() {
     super.onInit();
@@ -27,5 +30,15 @@ class AccountController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // void addFavorite() {
+  //   favorite.value = ['1', '2', '3'];
+  //   // favorite.assignAll(['1', '2', '3']);
+  //   print("Favorite: ${favorite.value}");
+  // }
+
+  bool isFavorite(String id) {
+    return favorite.contains(id);
   }
 }
