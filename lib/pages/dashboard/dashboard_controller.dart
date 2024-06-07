@@ -7,6 +7,7 @@ import 'package:exam/core/values/image.dart';
 import 'package:exam/pages/search_page.dart';
 import 'package:exam/pages/test.dart';
 import 'package:exam/pages/testlich.dart';
+import 'package:exam/pages/testthongtinaccount.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -147,7 +148,9 @@ class DashboardController extends FullLifeCycleController
                           ),
                           Container(
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Get.to(TestPage());
+                              },
                               child: Text(
                                 'See all',
                                 style: TextStyle(color: kBgGuildItemColor),
@@ -173,6 +176,25 @@ class DashboardController extends FullLifeCycleController
                   ),
                 ),
                 checkLogin
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Favorite Place',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              Text('Explore',
+                                  style: TextStyle(color: kBgGuildItemColor))
+                            ],
+                          ),
+                        ),
+                      )
+                    : Container(),
+                checkLogin
                     ? Obx(() {
                         final favoritePosts = location.posts.where((post) {
                           return account.isFavorite(post.id!);
@@ -195,148 +217,6 @@ class DashboardController extends FullLifeCycleController
                           ),
                         );
                       })
-                    // Column(
-                    //     children: [
-                    //       Padding(
-                    //         padding: const EdgeInsets.symmetric(vertical: 16),
-                    //         child: Container(
-                    //           child: Row(
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             children: [
-                    //               Text(
-                    //                 'Favorite Place',
-                    //                 style: TextStyle(
-                    //                     fontSize: 20,
-                    //                     fontWeight: FontWeight.bold),
-                    //               ),
-                    //               Text('Explore',
-                    //                   style:
-                    //                       TextStyle(color: kBgGuildItemColor))
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       Container(
-                    //         height: 230,
-                    //         child: ListView.builder(
-                    //           scrollDirection: Axis.horizontal,
-                    //           itemCount: 10,
-                    //           itemBuilder: (context, index) {
-                    //             return Padding(
-                    //               padding: const EdgeInsets.all(8.0),
-                    //               child: Container(
-                    //                   height: 230,
-                    //                   width: 150,
-                    //                   decoration: BoxDecoration(
-                    //                       image: DecorationImage(
-                    //                         // image: AssetImage(AppAssets.dainoi),
-                    //                         image: NetworkImage(
-                    //                             'https://i0.wp.com/media.techcity.cloud/vietnam.vn/2023/10/Vinh-Ha-Long-1-3.jpg?fit=1280%2C853&ssl=1'),
-                    //                         fit: BoxFit.cover,
-                    //                       ),
-                    //                       borderRadius: BorderRadius.all(
-                    //                           Radius.circular(24))),
-                    //                   child: Padding(
-                    //                     padding: const EdgeInsets.all(8.0),
-                    //                     child: Container(
-                    //                         child: Column(
-                    //                       mainAxisAlignment:
-                    //                           MainAxisAlignment.spaceBetween,
-                    //                       crossAxisAlignment:
-                    //                           CrossAxisAlignment.end,
-                    //                       children: [
-                    //                         InkWell(
-                    //                           onTap: () {},
-                    //                           child: Container(
-                    //                             height: 30,
-                    //                             width: 30,
-                    //                             decoration: BoxDecoration(
-                    //                                 borderRadius:
-                    //                                     BorderRadius.all(
-                    //                                         Radius.circular(
-                    //                                             50)),
-                    //                                 color: Colors.white),
-                    //                             child: Icon(
-                    //                               Icons.favorite,
-                    //                               color: Colors.red,
-                    //                             ),
-                    //                           ),
-                    //                         ),
-                    //                         Container(
-                    //                           child: Column(
-                    //                             mainAxisAlignment:
-                    //                                 MainAxisAlignment.end,
-                    //                             crossAxisAlignment:
-                    //                                 CrossAxisAlignment.start,
-                    //                             children: [
-                    //                               Text(
-                    //                                 'Dai noi',
-                    //                                 style: TextStyle(
-                    //                                     fontSize: 20,
-                    //                                     color: Colors.white,
-                    //                                     fontWeight:
-                    //                                         FontWeight.bold),
-                    //                               ),
-                    //                               Container(
-                    //                                 child: Row(
-                    //                                   children: [
-                    //                                     Container(
-                    //                                       height: 15,
-                    //                                       child:
-                    //                                           SvgPicture.asset(
-                    //                                               assetName),
-                    //                                     ),
-                    //                                     Text(
-                    //                                       'Hue, VietNam',
-                    //                                       style: TextStyle(
-                    //                                           fontSize: 15,
-                    //                                           color:
-                    //                                               Colors.white),
-                    //                                     ),
-                    //                                   ],
-                    //                                 ),
-                    //                               ),
-                    //                               Container(
-                    //                                 child: Row(
-                    //                                   children: [
-                    //                                     RatingBarIndicator(
-                    //                                         direction:
-                    //                                             Axis.horizontal,
-                    //                                         itemCount: 5,
-                    //                                         itemSize: 18,
-                    //                                         rating: 5,
-                    //                                         itemBuilder:
-                    //                                             (context,
-                    //                                                     index) =>
-                    //                                                 Icon(
-                    //                                                   Icons
-                    //                                                       .star_outlined,
-                    //                                                   color: Colors
-                    //                                                       .amber,
-                    //                                                 )),
-                    //                                     Container(
-                    //                                       child: Text('5',
-                    //                                           style: TextStyle(
-                    //                                               fontSize: 18,
-                    //                                               color: Colors
-                    //                                                   .white)),
-                    //                                     )
-                    //                                   ],
-                    //                                 ),
-                    //                               )
-                    //                             ],
-                    //                           ),
-                    //                         ),
-                    //                       ],
-                    //                     )),
-                    //                   )),
-                    //             );
-                    //           },
-                    //         ),
-                    //       )
-                    //     ],
-                    //   )
                     : Container(),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -380,7 +260,12 @@ class DashboardController extends FullLifeCycleController
         ),
       ),
       Container(
-        color: Colors.red,
+        child: Container(
+          child: ElevatedButton(
+            onPressed: () => Get.to(UserScreen()),
+            child: Text("get user 1"),
+          ),
+        ),
       ),
       SingleChildScrollView(
           child: ElevatedButton(
@@ -390,11 +275,12 @@ class DashboardController extends FullLifeCycleController
         child: Text('data'),
       )),
       Container(
-        child: ElevatedButton(
-            onPressed: () {
-              location.getFavorite();
-            },
-            child: Text('Search')),
+        // child: ElevatedButton(
+        //     onPressed: () {
+        //       location.getFavorite();
+        //     },
+        //     child: Text('Search')),
+        color: Colors.red,
       ),
       Container(
         color: Colors.grey,

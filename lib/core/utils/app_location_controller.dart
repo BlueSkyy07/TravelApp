@@ -20,7 +20,7 @@ class LocationController extends GetxController {
   void onInit() {
     super.onInit();
     getPosts();
-    getFavorite();
+    // getFavorite();
   }
 
   void setLocation(Post newLocation) {
@@ -41,24 +41,6 @@ class LocationController extends GetxController {
     }
   }
 
-  Future<void> getFavorite() async {
-    isLoading.value = true;
-    try {
-      // Assuming userId is '1' for now, as per your code
-      userId.value = '1';
-      var response = await dataServices().getFavoriteAccounts();
-      if (response != null) {
-        favoriteResults.assignAll(
-            response); // Assign favorite accounts to favoriteResults list
-      }
-      print(response);
-    } catch (e) {
-      print('Error fetching favorite accounts: $e');
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   void searchLocations(String query) {
     if (query.isEmpty) {
       searchResults.value = [];
@@ -72,5 +54,10 @@ class LocationController extends GetxController {
       }).toList();
       print(searchResults);
     }
+  }
+
+  List<Post> getPostsBySchedule(List<Schedule> schedules) {
+    final scheduleIds = schedules.expand((s) => s.id ?? []).toList();
+    return posts.where((post) => scheduleIds.contains(post.id)).toList();
   }
 }

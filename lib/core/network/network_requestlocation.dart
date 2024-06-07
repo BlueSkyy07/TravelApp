@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:exam/core/model/account.dart';
 import 'package:exam/core/model/post.dart';
+import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkRequest {
@@ -56,16 +58,28 @@ class dataServices {
     return accountFromJson(response.body);
   }
 
-  Future<List<Account>> getFavoriteAccounts() async {
-    var response = await http.get(urlAccount);
-    if (response.statusCode == 200) {
-      List<Account> accounts = accountFromJson(response.body);
-      // Filter accounts based on favorite
-      List<Account> favoriteAccounts =
-          accounts.where((account) => account.favorite!.isNotEmpty).toList();
-      return favoriteAccounts;
-    } else {
-      throw Exception('Failed to load favorite accounts');
+  Future<void> GetAccount(String userId) async {
+    final AccountController accountController = Get.put(AccountController());
+    try {
+      final response = await http
+          .get(Uri.parse('https://664784812bb946cf2f9e0700.mockapi.io/user'));
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body) as List;
+        var user = jsonResponse
+            .map((item) => Account.fromJson(item))
+            .firstWhere((user) => user.id == userId);
+
+        accountController.id.value = user.id!;
+        accountController.username.value = user.username!;
+        accountController.sex.value = user.sex!;
+        accountController.phonenumber.value = user.phonenumber!;
+        accountController.favorite.value = user.favorite ?? [];
+        accountController.schedule.value = user.schedule ?? [];
+      } else {
+        print("Failed to load users");
+      }
+    } catch (e) {
+      print("Error: $e");
     }
   }
 }
