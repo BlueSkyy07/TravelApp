@@ -85,7 +85,9 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
                       Expanded(
                           flex: 0,
                           child: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.back();
+                              },
                               icon: FaIcon(
                                 FontAwesomeIcons.arrowLeft,
                                 color: Colors.white,

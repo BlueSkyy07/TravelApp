@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:exam/core/model/account.dart';
 import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/utils/app_utility.dart';
@@ -201,21 +202,29 @@ class DashboardController extends FullLifeCycleController
                         final favoritePosts = location.posts.where((post) {
                           return account.isFavorite(post.id!);
                         }).toList();
-                        return SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            child: Row(
-                              children:
-                                  List.generate(favoritePosts.length, (index) {
-                                final post = favoritePosts[index];
-                                return buildFavoriteCard(
+                        return Container(
+                          height: 230,
+                          child: ListView.builder(
+                            itemCount: favoritePosts.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              final post = favoritePosts[index];
+
+                              return GestureDetector(
+                                onTap: () {
+                                  print("click test");
+                                  location.setLocation(post);
+                                  // Get.to(DashboardController());
+                                  Get.to(MyPlane());
+                                },
+                                child: buildFavoriteCard(
                                   post.image!,
                                   post.title!,
                                   post.location!,
                                   post.rating?.rate?.toDouble() ?? 0.0,
-                                );
-                              }),
-                            ),
+                                ),
+                              );
+                            },
                           ),
                         );
                       })
@@ -368,6 +377,11 @@ class CategoryItem extends StatelessWidget {
 Widget buildLocationCard(
     int index, String image, String title, String description, double rate) {
   final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+  bool isFav() {
+    String userID = locationController.posts[index].id!;
+    return accountController.isFavorite(userID);
+  }
 
   return InkWell(
     onTap: () {
@@ -415,13 +429,29 @@ Widget buildLocationCard(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          InkWell(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.favorite_border,
-                              color: Colors.black12,
-                            ),
-                          )
+                          accountController.checklogin == false
+                              ? InkWell(
+                                  onTap: () {},
+                                  child: Icon(
+                                    Icons.favorite_border,
+                                    color: Colors.black12,
+                                  ),
+                                )
+                              : isFav() == true
+                                  ? InkWell(
+                                      onTap: () {},
+                                      child: Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                      ),
+                                    )
+                                  : InkWell(
+                                      onTap: () {},
+                                      child: Icon(
+                                        Icons.favorite_border,
+                                        color: Colors.black12,
+                                      ),
+                                    )
                         ],
                       ),
                       Row(

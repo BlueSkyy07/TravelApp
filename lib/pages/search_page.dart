@@ -3,6 +3,7 @@ import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/values/colors.dart';
 import 'package:exam/pages/dashboard/dashboard_controller.dart';
+import 'package:exam/pages/place_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,7 @@ class _SearchPageState extends State<SearchPage> {
   final AccountController accountController = Get.put(AccountController());
   final TextEditingController searchController = TextEditingController();
   bool showResults = false;
+  bool checkLogin = true;
 
   final String assetName = 'assets/images/location.svg';
 
@@ -87,8 +89,10 @@ class _SearchPageState extends State<SearchPage> {
                                 locationController.searchResults[index];
                             return GestureDetector(
                               onTap: () {
+                                print("click test");
                                 locationController.setLocation(location);
-                                Get.to(DashboardController());
+                                // Get.to(DashboardController());
+                                Get.to(MyPlane());
                               },
                               child: buildLocationCard(
                                 location.image!,
@@ -103,7 +107,7 @@ class _SearchPageState extends State<SearchPage> {
                     }),
                   )
                 : Spacer(), // Spacer pushes the favorites section to the bottom
-            if (!showResults)
+            if (!showResults && checkLogin)
               Obx(() {
                 final favoritePosts = locationController.posts.where((post) {
                   return accountController.isFavorite(post.id!);
@@ -127,27 +131,52 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Row(
-                              children:
-                                  List.generate(favoritePosts.length, (index) {
-                                final post = favoritePosts[index];
-                                return buildFavoriteCard(
-                                  post.image!,
-                                  post.title!,
-                                  post.location!,
-                                  post.rating?.rate?.toDouble() ?? 0.0,
-                                );
-                              }),
+                    Container(
+                      height: 230,
+                      child: ListView.builder(
+                        itemCount: favoritePosts.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          final post = favoritePosts[index];
+
+                          return GestureDetector(
+                            onTap: () {
+                              print("click test");
+                              locationController.setLocation(post);
+                              // Get.to(DashboardController());
+                              Get.to(MyPlane());
+                            },
+                            child: buildFavoriteCard(
+                              post.image!,
+                              post.title!,
+                              post.location!,
+                              post.rating?.rate?.toDouble() ?? 0.0,
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    ),
+                    )
+                    // SingleChildScrollView(
+                    //   scrollDirection: Axis.horizontal,
+                    //   child: Column(
+                    //     children: [
+                    //       Container(
+                    //         child: Row(
+                    //           children:
+                    //               List.generate(favoritePosts.length, (index) {
+                    //             final post = favoritePosts[index];
+                    //             return buildFavoriteCard(
+                    //               post.image!,
+                    //               post.title!,
+                    //               post.location!,
+                    //               post.rating?.rate?.toDouble() ?? 0.0,
+                    //             );
+                    //           }),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 );
               })
@@ -294,85 +323,82 @@ class _SearchPageState extends State<SearchPage> {
 
 Widget buildLocationCard(
     String image, String title, String description, double rate) {
-  return InkWell(
-    onTap: () {},
-    child: Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      height: 120,
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(image),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    height: 120,
+    child: Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(image),
+              fit: BoxFit.cover,
             ),
-            height: 120,
-            width: 100,
+            borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+          height: 120,
+          width: 100,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          InkWell(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.favorite_border,
-                              color: Colors.black12,
-                            ),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          RatingBarIndicator(
-                            itemCount: 5,
-                            itemSize: 20,
-                            rating: rate,
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
+                        ),
+                        InkWell(
+                          onTap: () {},
+                          child: Icon(
+                            Icons.favorite_border,
+                            color: Colors.black12,
                           ),
-                          SizedBox(width: 10),
-                          Text(
-                            '$rate',
-                            style: TextStyle(fontSize: 15, color: Colors.black),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        RatingBarIndicator(
+                          itemCount: 5,
+                          itemSize: 20,
+                          rating: rate,
+                          itemBuilder: (context, index) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Text(
-                    description,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 3,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ],
-              ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          '$rate',
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Text(
+                  description,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }

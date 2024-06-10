@@ -25,6 +25,7 @@ class LocationController extends GetxController {
 
   void setLocation(Post newLocation) {
     location.value = newLocation;
+    print(location.value);
   }
 
   Future<void> getPosts() async {

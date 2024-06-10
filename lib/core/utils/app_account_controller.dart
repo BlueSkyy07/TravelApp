@@ -11,7 +11,7 @@ class AccountController extends GetxController {
   RxList<Account> accounts = RxList<Account>();
   var isLoading = false.obs;
   var account = Account().obs;
-  RxBool checklogin = false.obs;
+  RxBool checklogin = true.obs;
   RxList<Account> favoriteResults = RxList<Account>();
   RxString idAccount = ''.obs;
   RxString username = ''.obs;
