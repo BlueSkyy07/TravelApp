@@ -21,6 +21,13 @@ class _SearchPageState extends State<SearchPage> {
 
   final String assetName = 'assets/images/location.svg';
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    // searchController.addListener(() {});
+    super.initState();
+  }
+
   void onSearchPressed() {
     locationController.searchLocations(searchController.text);
     setState(() {
@@ -44,6 +51,8 @@ class _SearchPageState extends State<SearchPage> {
             Container(
               height: 50,
               child: TextField(
+                onSubmitted: (value) {},
+                textInputAction: TextInputAction.search,
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'Search...',

@@ -4,6 +4,8 @@ import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/utils/app_utility.dart';
 import 'package:exam/core/values/image.dart';
+import 'package:exam/pages/detail_place_page.dart';
+import 'package:exam/pages/place_page.dart';
 import 'package:exam/pages/search_page.dart';
 import 'package:exam/pages/test.dart';
 import 'package:exam/pages/testlich.dart';
@@ -247,6 +249,7 @@ class DashboardController extends FullLifeCycleController
                           children: List.generate(
                         location.posts.length,
                         (index) => buildLocationCard(
+                            index,
                             location.posts[index].image!,
                             location.posts[index].title!,
                             location.posts[index].description!,
@@ -363,11 +366,17 @@ class CategoryItem extends StatelessWidget {
 }
 
 Widget buildLocationCard(
-    String image, String title, String description, double rate) {
+    int index, String image, String title, String description, double rate) {
+  final LocationController locationController = Get.put(LocationController());
+
   return InkWell(
-    onTap: () {},
+    onTap: () {
+      Get.find<LocationController>()
+          .setLocation(locationController.posts[index]);
+      Get.to(MyPlane());
+    },
     child: Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           border: Border.all(width: 1, color: Colors.black12),
           borderRadius: BorderRadius.all(Radius.circular(24))),
