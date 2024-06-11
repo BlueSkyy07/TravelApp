@@ -58,7 +58,7 @@ class dataServices {
     return accountFromJson(response.body);
   }
 
-  Future<void> GetAccount(String userId) async {
+  Future<void> GetAccount(String userName) async {
     final AccountController accountController = Get.put(AccountController());
     try {
       final response = await http
@@ -67,7 +67,7 @@ class dataServices {
         var jsonResponse = json.decode(response.body) as List;
         var user = jsonResponse
             .map((item) => Account.fromJson(item))
-            .firstWhere((user) => user.id == userId);
+            .firstWhere((user) => user.username == userName);
 
         accountController.id.value = user.id!;
         accountController.username.value = user.username!;
@@ -80,6 +80,127 @@ class dataServices {
       }
     } catch (e) {
       print("Error: $e");
+    }
+  }
+
+  //Xử lý user
+  String AccountUrl = 'https://664784812bb946cf2f9e0700.mockapi.io/user';
+
+  Future<void> UpdatePosts(String id, String title) async {
+    var response = await http.put(
+      Uri.parse(AccountUrl + "/" + id),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'title': title,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Update successful');
+      return;
+    } else {
+      print('Failed to update post: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to update post");
+    }
+  }
+
+  Future<void> CreatePost(String id, String title, String description,
+      String category, String location, String image) async {
+    var post = Post(
+      id: id,
+      title: title,
+      description: description,
+      category: category,
+      location: location,
+      image: image,
+      rating: Rating(rate: 0, count: 0),
+    );
+    var response = await http.post(
+      Uri.parse(AccountUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(post.toJson()),
+    );
+
+    if (response.statusCode == 201) {
+      print('Post created successfully');
+      return;
+    } else {
+      print('Failed to create post: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to create post");
+    }
+  }
+
+  Future<void> addToFavorites(String userId, String favorite) async {
+    var response = await http.get(Uri.parse(AccountUrl + "/" + userId));
+    if (response.statusCode == 200) {
+      var userData = jsonDecode(response.body);
+
+      if (!userData['favorite'].contains(favorite)) {
+        userData['favorite'].add(favorite);
+
+        var updateResponse = await http.put(
+          Uri.parse(AccountUrl + "/" + userId),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(userData),
+        );
+
+        if (updateResponse.statusCode == 200) {
+          print('Added to favorites successfully');
+          return;
+        } else {
+          print('Failed to update user: ${updateResponse.statusCode}');
+          print('Response body: ${updateResponse.body}');
+          throw Exception("Failed to update user");
+        }
+      } else {
+        print('Post is already in favorites');
+      }
+    } else {
+      print('Failed to retrieve user: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to retrieve user");
+    }
+  }
+
+  Future<void> removeFromFavorites(String userId, String favorite) async {
+    var response = await http.get(Uri.parse(AccountUrl + "/" + userId));
+    if (response.statusCode == 200) {
+      var userData = jsonDecode(response.body);
+
+      if (userData['favorite'].contains(favorite)) {
+        userData['favorite'].remove(favorite);
+
+        var updateResponse = await http.put(
+          Uri.parse(AccountUrl + "/" + userId),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(userData),
+        );
+
+        if (updateResponse.statusCode == 200) {
+          print('Removed from favorites successfully');
+          return;
+        } else {
+          print('Failed to update user: ${updateResponse.statusCode}');
+          print('Response body: ${updateResponse.body}');
+          throw Exception("Failed to update user");
+        }
+      } else {
+        print('Post is not in favorites');
+      }
+    } else {
+      print('Failed to retrieve user: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to retrieve user");
     }
   }
 }

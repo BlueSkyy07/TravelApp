@@ -36,7 +36,7 @@ class DashboardController extends FullLifeCycleController
   late PageController pageController;
   late TabController tabController;
   final String assetName = 'assets/images/location.svg';
-  bool checkLogin = true;
+  // bool checkLogin = true;
 
   // Danh sách các category
   final List<Map<String, dynamic>> categories = [
@@ -178,57 +178,62 @@ class DashboardController extends FullLifeCycleController
                     },
                   ),
                 ),
-                checkLogin
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Favorite Place',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              Text('Explore',
-                                  style: TextStyle(color: kBgGuildItemColor))
-                            ],
-                          ),
-                        ),
-                      )
-                    : Container(),
-                checkLogin
-                    ? Obx(() {
-                        final favoritePosts = location.posts.where((post) {
-                          return account.isFavorite(post.id!);
-                        }).toList();
-                        return Container(
-                          height: 230,
-                          child: ListView.builder(
-                            itemCount: favoritePosts.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              final post = favoritePosts[index];
-
-                              return GestureDetector(
-                                onTap: () {
-                                  print("click test");
-                                  location.setLocation(post);
-                                  // Get.to(DashboardController());
-                                  Get.to(MyPlane());
-                                },
-                                child: buildFavoriteCard(
-                                  post.image!,
-                                  post.title!,
-                                  post.location!,
-                                  post.rating?.rate?.toDouble() ?? 0.0,
+                Obx(
+                  () => account.checklogin.value == true
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Favorite Place',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                              );
-                            },
+                                Text('Explore',
+                                    style: TextStyle(color: kBgGuildItemColor))
+                              ],
+                            ),
                           ),
-                        );
-                      })
-                    : Container(),
+                        )
+                      : Container(),
+                ),
+                Obx(
+                  () => account.checklogin.value == true
+                      ? Obx(() {
+                          final favoritePosts = location.posts.where((post) {
+                            return account.isFavorite(post.id!);
+                          }).toList();
+                          return Container(
+                            height: 230,
+                            child: ListView.builder(
+                              itemCount: favoritePosts.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                final post = favoritePosts[index];
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    print("click test");
+                                    location.setLocation(post);
+                                    // Get.to(DashboardController());
+                                    Get.to(MyPlane());
+                                  },
+                                  child: buildFavoriteCard(
+                                    post.image!,
+                                    post.title!,
+                                    post.location!,
+                                    post.rating?.rate?.toDouble() ?? 0.0,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        })
+                      : Container(),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Container(
@@ -287,12 +292,22 @@ class DashboardController extends FullLifeCycleController
         child: Text('data'),
       )),
       Container(
-        // child: ElevatedButton(
-        //     onPressed: () {
-        //       location.getFavorite();
-        //     },
-        //     child: Text('Search')),
-        color: Colors.red,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  account.addToFavorites('2', '2');
+                },
+                child: Text('add favorite')),
+            ElevatedButton(
+                onPressed: () {
+                  account.removeFromFavorites('2', '2');
+                },
+                child: Text('remove favorite')),
+          ],
+        ),
+        // color: Colors.red,
       ),
       Container(
         color: Colors.grey,
@@ -429,29 +444,14 @@ Widget buildLocationCard(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          accountController.checklogin == false
-                              ? InkWell(
-                                  onTap: () {},
-                                  child: Icon(
-                                    Icons.favorite_border,
-                                    color: Colors.black12,
-                                  ),
-                                )
+                          Obx(() => accountController.checklogin == false
+                              ? Icon(Icons.favorite_border)
                               : isFav() == true
-                                  ? InkWell(
-                                      onTap: () {},
-                                      child: Icon(
-                                        Icons.favorite,
-                                        color: Colors.red,
-                                      ),
+                                  ? Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
                                     )
-                                  : InkWell(
-                                      onTap: () {},
-                                      child: Icon(
-                                        Icons.favorite_border,
-                                        color: Colors.black12,
-                                      ),
-                                    )
+                                  : Icon(Icons.favorite_border))
                         ],
                       ),
                       Row(

@@ -15,7 +15,6 @@ class _UserScreenState extends State<UserScreen> {
   final AccountController accountController = Get.put(AccountController());
   final LocationController locationController = Get.put(LocationController());
   @override
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -28,7 +27,8 @@ class _UserScreenState extends State<UserScreen> {
                 Container(
                   child: ElevatedButton(
                     onPressed: () async {
-                      await accountController.getAccount('1');
+                      accountController.ChangeLogin();
+                      await accountController.getAccount('minhthai123');
                     },
                     child: Text('Get User'),
                   ),

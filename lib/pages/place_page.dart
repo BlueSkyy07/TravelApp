@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:exam/core/model/post.dart';
+import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/pages/detail_place_page.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class MyPlane extends StatefulWidget {
 
 class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
   final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
   late AnimationController _controller;
   late Animation _colorAnimated;
   late Animation<double> _sizeAnimated;
@@ -96,14 +98,24 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
                       Expanded(
                         flex: 0,
                         child: IconButton(
-                            onPressed: () {
-                              isFav
-                                  ? _controller.reverse()
-                                  : _controller.forward();
-                            },
-                            icon: Icon(Icons.favorite,
-                                color: _colorAnimated.value,
-                                size: _sizeAnimated.value)),
+                          onPressed: () async {
+                            if (isFav) {
+                              _controller.reverse();
+                              await accountController.removeFromFavorites(
+                                  accountController.id.value, location.id!);
+                            } else {
+                              _controller.forward();
+                              await accountController.addToFavorites(
+                                  accountController.id.value, location.id!);
+                            }
+                            await accountController.getAccount('minhthai123');
+                          },
+                          icon: Icon(
+                            Icons.favorite,
+                            color: _colorAnimated.value,
+                            size: _sizeAnimated.value,
+                          ),
+                        ),
                       )
                     ],
                   )),

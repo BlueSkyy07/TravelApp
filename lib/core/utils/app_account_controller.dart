@@ -11,7 +11,7 @@ class AccountController extends GetxController {
   RxList<Account> accounts = RxList<Account>();
   var isLoading = false.obs;
   var account = Account().obs;
-  RxBool checklogin = true.obs;
+  RxBool checklogin = false.obs;
   RxList<Account> favoriteResults = RxList<Account>();
   RxString idAccount = ''.obs;
   RxString username = ''.obs;
@@ -56,12 +56,13 @@ class AccountController extends GetxController {
 
   void ChangeLogin() {
     checklogin.value = true;
+    print(checklogin.value);
   }
 
-  Future<void> getAccount(String UserId) async {
+  Future<void> getAccount(String UserName) async {
     isLoading.value = true;
     try {
-      await dataServices().GetAccount(UserId);
+      await dataServices().GetAccount(UserName);
       print("ten User: ${username.value}");
       print("phonenumber: ${phonenumber.value}");
       print("Id: ${id}");
@@ -74,6 +75,31 @@ class AccountController extends GetxController {
     }
   }
 
+  Future<void> addToFavorites(String id, String favorite) async {
+    isLoading.value = true;
+    try {
+      await dataServices().addToFavorites(id, favorite);
+
+      print("Favorite create successfully");
+    } catch (e) {
+      print('Error add Favorite: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> removeFromFavorites(String id, String favorite) async {
+    isLoading.value = true;
+    try {
+      await dataServices().removeFromFavorites(id, favorite);
+
+      print("Favorite remove successfully");
+    } catch (e) {
+      print('Error remove Favorite: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
   // Future<void> fetchUserById(String userId) async {
   //   try {
   //     final response = await http
