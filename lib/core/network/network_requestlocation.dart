@@ -203,4 +203,59 @@ class dataServices {
       throw Exception("Failed to retrieve user");
     }
   }
+
+  Future<void> addToSchedule(
+      String userId, String datetime, String localId) async {
+    var response = await http.get(Uri.parse(AccountUrl + "/" + userId));
+    if (response.statusCode == 200) {
+      var userData = jsonDecode(response.body);
+
+      bool scheduleExists = false;
+
+      // Duyệt qua tất cả các lịch trình để kiểm tra xem đã tồn tại hay chưa
+      for (var schedule in userData['schedule']) {
+        if (schedule['datetime'] == datetime) {
+          // Nếu lịch trình đã tồn tại và chưa chứa localId, thêm localId vào
+          if (!schedule['id'].contains(localId)) {
+            schedule['id'].add(localId);
+            scheduleExists = true;
+            break;
+          } else {
+            print('Local ID already in schedule for this datetime');
+            return;
+          }
+        }
+      }
+
+      // Nếu không tìm thấy lịch trình nào với datetime đã cho, tạo lịch trình mới
+      if (!scheduleExists) {
+        userData['schedule'].add({
+          'id': [localId],
+          'datetime': datetime
+        });
+      }
+
+      // Cập nhật lại thông tin người dùng trên server
+      var updateResponse = await http.put(
+        Uri.parse(AccountUrl + "/" + userId),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(userData),
+      );
+
+      if (updateResponse.statusCode == 200) {
+        print('Added to schedule successfully');
+        return;
+      } else {
+        print('Failed to update user: ${updateResponse.statusCode}');
+        print('Response body: ${updateResponse.body}');
+        throw Exception("Failed to update user");
+      }
+    } else {
+      print('Failed to retrieve user: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to retrieve user");
+    }
+  }
 }

@@ -297,6 +297,11 @@ class DashboardController extends FullLifeCycleController
           children: [
             ElevatedButton(
                 onPressed: () {
+                  Get.to(UserScreen());
+                },
+                child: Text('Get user')),
+            ElevatedButton(
+                onPressed: () {
                   account.addToFavorites('2', '2');
                 },
                 child: Text('add favorite')),
@@ -305,6 +310,18 @@ class DashboardController extends FullLifeCycleController
                   account.removeFromFavorites('2', '2');
                 },
                 child: Text('remove favorite')),
+            ElevatedButton(
+                onPressed: () {
+                  account.addToSchedule('2', '13-08-2024', '2');
+                },
+                child: Text('add schedule')),
+            ElevatedButton(
+                onPressed: () {
+                  bool check = account.isIdInSchedule('3', "12-6-2024");
+                  // account.isIdInSchedule('2');
+                  print(check);
+                },
+                child: Text('check id schedule')),
           ],
         ),
         // color: Colors.red,

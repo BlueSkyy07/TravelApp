@@ -50,6 +50,12 @@ class AccountController extends GetxController {
   //   print("Favorite: ${favorite.value}");
   // }
 
+  bool isIdInSchedule(String id, String datetime) {
+    return schedule.any((item) {
+      return item.id!.contains(id) && item.datetime!.contains(datetime);
+    });
+  }
+
   bool isFavorite(String id) {
     return favorite.contains(id);
   }
@@ -100,6 +106,21 @@ class AccountController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> addToSchedule(
+      String userId, String datetime, String localId) async {
+    isLoading.value = true;
+    try {
+      await dataServices().addToSchedule(userId, datetime, localId);
+
+      print("Schedule create successfully");
+    } catch (e) {
+      print('Error add Schedule: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // Future<void> fetchUserById(String userId) async {
   //   try {
   //     final response = await http

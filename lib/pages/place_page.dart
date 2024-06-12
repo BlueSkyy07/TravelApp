@@ -22,7 +22,7 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation _colorAnimated;
   late Animation<double> _sizeAnimated;
-  bool isFav = false;
+  bool isFav = true;
 
   @override
   void initState() {
@@ -99,7 +99,7 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
                         flex: 0,
                         child: IconButton(
                           onPressed: () async {
-                            if (isFav) {
+                            if (!isFav) {
                               _controller.reverse();
                               await accountController.removeFromFavorites(
                                   accountController.id.value, location.id!);

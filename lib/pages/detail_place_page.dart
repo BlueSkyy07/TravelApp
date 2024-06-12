@@ -1,13 +1,16 @@
 import 'dart:ui';
 
 import 'package:exam/core/model/post.dart';
+import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
+import 'package:exam/pages/testlich.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:insta_image_viewer/insta_image_viewer.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:date_picker_plus/date_picker_plus.dart';
 
 class MyInformation extends StatefulWidget {
   const MyInformation({super.key});
@@ -23,6 +26,13 @@ class _MyInformationState extends State<MyInformation>
   late Animation<double> _sizeAnimated;
   bool isFav = false;
   final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+  DateTime? selectedDate;
+
+  bool isSchedule(String id, String datetime) {
+    return accountController.isIdInSchedule(id, datetime);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -496,10 +506,79 @@ class _MyInformationState extends State<MyInformation>
                           subtitle: Text("Dai noi Hue dep vai lon"),
                           isThreeLine: true,
                           trailing: Text("Today"),
-                        ))
+                        )),
+                    Obx(() => accountController.checklogin != true
+                        ? ElevatedButton(
+                            onPressed: () {
+                              //chuyển đến trang login
+                            },
+                            child: Text('book'),
+                          )
+                        : ElevatedButton(
+                            onPressed: () async {
+                              await accountController.getAccount('minhthai123');
+                              _showDatePicker(context, location.id!);
+                            },
+                            child: Text('book'),
+                          ))
                   ],
                 );
               })),
+        );
+      },
+    );
+  }
+
+  void _showDatePicker(BuildContext context, String localId) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 500,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 300,
+                child: DatePicker(
+                  centerLeadingDate: true,
+                  splashColor: Colors.white,
+                  minDate: DateTime(2020, 10, 10),
+                  maxDate: DateTime(2024, 10, 30),
+                  initialDate: DateTime.now(),
+                  onDateSelected: (DateTime newDate) {
+                    selectedDate = newDate;
+                  },
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (selectedDate != null) {
+                    if (!isSchedule(localId,
+                        "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}")) {
+                      Navigator.pop(context);
+                      Get.snackbar(
+                        "Selected Date",
+                        "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year} complete!",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      await accountController.addToSchedule(
+                          accountController.id.value,
+                          "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}",
+                          localId);
+                    } else {
+                      Navigator.pop(context);
+                      Get.snackbar(
+                        "Selected Date",
+                        "Bạn đã có lịch trình này",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
+                  }
+                },
+                child: Text('Confirm Date'),
+              ),
+            ],
+          ),
         );
       },
     );
