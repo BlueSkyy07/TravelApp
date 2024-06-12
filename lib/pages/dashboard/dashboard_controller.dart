@@ -322,6 +322,13 @@ class DashboardController extends FullLifeCycleController
                   print(check);
                 },
                 child: Text('check id schedule')),
+            ElevatedButton(
+                onPressed: () {
+                  account.removeFromSchedule('1', "12-6-2024", "4");
+                  // account.isIdInSchedule('2');
+                  print('check remove');
+                },
+                child: Text('check id schedule')),
           ],
         ),
         // color: Colors.red,

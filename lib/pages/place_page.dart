@@ -22,7 +22,15 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation _colorAnimated;
   late Animation<double> _sizeAnimated;
-  bool isFav = true;
+  // bool isFav = true;
+  // bool isFav() {
+  //   return accountController.isFavorite(accountController.id.value);
+  // }
+  bool isFav(String userid) {
+    String userID = userid;
+    // locationController.posts[index].id!;
+    return accountController.isFavorite(userID);
+  }
 
   @override
   void initState() {
@@ -43,13 +51,13 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
       print(_colorAnimated.value);
     });
 
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        isFav = true;
-      } else {
-        isFav = false;
-      }
-    });
+    // _controller.addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     isFav = true;
+    //   } else {
+    //     isFav = false;
+    //   }
+    // });
   }
 
   @override
@@ -95,28 +103,66 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
                                 color: Colors.white,
                                 size: 25,
                               ))),
+                      // Expanded(
+                      //   flex: 0,
+                      //   child: IconButton(
+                      //     onPressed: () async {
+                      //       if (isFav == true) {
+                      //         _controller.reverse();
+                      //         await accountController.removeFromFavorites(
+                      //             accountController.id.value, location.id!);
+                      //       } else {
+                      //         _controller.forward();
+                      //         await accountController.addToFavorites(
+                      //             accountController.id.value, location.id!);
+                      //       }
+                      //       await accountController.getAccount('minhthai123');
+                      //     },
+                      //     icon: Icon(
+                      //       Icons.favorite,
+
+                      //     ),
+                      //   ),
+                      // )
                       Expanded(
-                        flex: 0,
-                        child: IconButton(
-                          onPressed: () async {
-                            if (!isFav) {
-                              _controller.reverse();
-                              await accountController.removeFromFavorites(
-                                  accountController.id.value, location.id!);
-                            } else {
-                              _controller.forward();
-                              await accountController.addToFavorites(
-                                  accountController.id.value, location.id!);
-                            }
-                            await accountController.getAccount('minhthai123');
-                          },
-                          icon: Icon(
-                            Icons.favorite,
-                            color: _colorAnimated.value,
-                            size: _sizeAnimated.value,
-                          ),
-                        ),
-                      )
+                          flex: 0,
+                          child: Obx(
+                            () => accountController.checklogin == false
+                                ? IconButton(
+                                    onPressed: () {
+                                      //chuyển tới trang login
+                                    },
+                                    icon: Icon(Icons.favorite))
+                                : isFav(location.id!) == true
+                                    ? IconButton(
+                                        onPressed: () async {
+                                          print(isFav(location.id!));
+                                          await accountController
+                                              .removeFromFavorites(
+                                                  "${accountController.id}",
+                                                  location.id!);
+                                          await accountController
+                                              .getAccount('minhthai123');
+                                        },
+                                        icon: Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
+                                        ))
+                                    : IconButton(
+                                        onPressed: () async {
+                                          await accountController
+                                              .addToFavorites(
+                                                  "${accountController.id}",
+                                                  location.id!);
+                                          await accountController
+                                              .getAccount('minhthai123');
+                                          print(isFav(location.id!));
+                                        },
+                                        icon: Icon(
+                                          Icons.favorite,
+                                          color: Colors.black,
+                                        )),
+                          ))
                     ],
                   )),
               Column(

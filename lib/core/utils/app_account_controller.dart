@@ -121,6 +121,19 @@ class AccountController extends GetxController {
     }
   }
 
+  Future<void> removeFromSchedule(
+      String userId, String datetime, String localId) async {
+    isLoading.value = true;
+    try {
+      await dataServices().removeFromSchedule(userId, datetime, localId);
+
+      print("Schedule delete successfully");
+    } catch (e) {
+      print('Error delete Schedule: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
   // Future<void> fetchUserById(String userId) async {
   //   try {
   //     final response = await http

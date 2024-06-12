@@ -258,4 +258,61 @@ class dataServices {
       throw Exception("Failed to retrieve user");
     }
   }
+
+  Future<void> removeFromSchedule(
+      String userId, String datetime, String localId) async {
+    var response = await http.get(Uri.parse(AccountUrl + "/" + userId));
+    if (response.statusCode == 200) {
+      var userData = jsonDecode(response.body);
+
+      bool scheduleUpdated = false;
+
+      // Duyệt qua tất cả các lịch trình để tìm và xóa localId
+      for (var schedule in userData['schedule']) {
+        if (schedule['datetime'] == datetime) {
+          if (schedule['id'].contains(localId)) {
+            schedule['id'].remove(localId);
+            scheduleUpdated = true;
+
+            // Nếu danh sách id rỗng, xóa luôn lịch trình đó
+            if (schedule['id'].isEmpty) {
+              userData['schedule'].remove(schedule);
+            }
+
+            break;
+          } else {
+            print('Local ID not found in schedule for this datetime');
+            return;
+          }
+        }
+      }
+
+      if (!scheduleUpdated) {
+        print('No schedule found for the given datetime');
+        return;
+      }
+
+      // Cập nhật lại thông tin người dùng trên server
+      var updateResponse = await http.put(
+        Uri.parse(AccountUrl + "/" + userId),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(userData),
+      );
+
+      if (updateResponse.statusCode == 200) {
+        print('Removed from schedule successfully');
+        return;
+      } else {
+        print('Failed to update user: ${updateResponse.statusCode}');
+        print('Response body: ${updateResponse.body}');
+        throw Exception("Failed to update user");
+      }
+    } else {
+      print('Failed to retrieve user: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to retrieve user");
+    }
+  }
 }

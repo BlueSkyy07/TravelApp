@@ -1,7 +1,9 @@
 import 'package:exam/core/model/account.dart';
+import 'package:exam/core/model/post.dart';
 import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/values/colors.dart';
+import 'package:exam/pages/place_page.dart';
 import 'package:exam/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -57,15 +59,24 @@ class TestLich extends StatelessWidget {
                         child:
                             Center(child: Text("Date: ${schedule.datetime}")),
                       ),
-                      Column(
-                        children: schedulePosts.map((post) {
-                          return buildLocationCard(
-                              post.image!,
-                              post.title!,
-                              post.description!,
-                              post.rating?.rate?.toDouble() ?? 0.0);
-                        }).toList(),
-                      ),
+                      Column(children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: schedulePosts.length,
+                          itemBuilder: (context, index) {
+                            final post = schedulePosts[index];
+                            return buildLocationCard(
+                                post,
+                                post.image!,
+                                post.title!,
+                                post.description!,
+                                post.rating?.rate?.toDouble() ?? 0.0,
+                                "${schedule.datetime}",
+                                post.id!);
+                          },
+                        ),
+                      ]),
                     ],
                   ),
                 );
@@ -78,10 +89,16 @@ class TestLich extends StatelessWidget {
   }
 }
 
-Widget buildLocationCard(
-    String image, String title, String description, double rate) {
+Widget buildLocationCard(Post post, String image, String title,
+    String description, double rate, String datetime, String localId) {
+  final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+
   return InkWell(
-    onTap: () {},
+    onTap: () {
+      locationController.setLocation(post);
+      Get.to(MyPlane());
+    },
     child: Container(
       padding: EdgeInsets.all(8),
       height: 160,
@@ -119,10 +136,13 @@ Widget buildLocationCard(
                             ),
                           ),
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              accountController.removeFromSchedule(
+                                  '${accountController.id}', datetime, localId);
+                            },
                             child: Icon(
-                              Icons.favorite_border,
-                              color: Colors.black12,
+                              Icons.delete,
+                              color: Colors.red,
                             ),
                           )
                         ],
