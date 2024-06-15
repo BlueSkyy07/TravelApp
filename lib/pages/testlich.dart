@@ -16,6 +16,9 @@ class TestLich extends StatelessWidget {
   Widget build(BuildContext context) {
     final AccountController accountController = Get.put(AccountController());
     final LocationController locationController = Get.put(LocationController());
+
+    accountController.getAccount('minhthai123');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -136,9 +139,11 @@ Widget buildLocationCard(Post post, String image, String title,
                             ),
                           ),
                           InkWell(
-                            onTap: () {
-                              accountController.removeFromSchedule(
+                            onTap: () async {
+                              await accountController.removeFromSchedule(
                                   '${accountController.id}', datetime, localId);
+                              // Refresh account data after removing item
+                              await accountController.getAccount('minhthai123');
                             },
                             child: Icon(
                               Icons.delete,

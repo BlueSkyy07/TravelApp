@@ -24,7 +24,13 @@ class _MyInformationState extends State<MyInformation>
   late AnimationController _controller;
   late Animation _colorAnimated;
   late Animation<double> _sizeAnimated;
-  bool isFav = false;
+  // bool isFav = false;
+  bool isFav(String userid) {
+    String userID = userid;
+    // locationController.posts[index].id!;
+    return accountController.isFavorite(userID);
+  }
+
   final LocationController locationController = Get.put(LocationController());
   final AccountController accountController = Get.put(AccountController());
   DateTime? selectedDate;
@@ -52,13 +58,13 @@ class _MyInformationState extends State<MyInformation>
       print(_colorAnimated.value);
     });
 
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        isFav = true;
-      } else {
-        isFav = false;
-      }
-    });
+    // _controller.addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     isFav = true;
+    //   } else {
+    //     isFav = false;
+    //   }
+    // });
   }
 
   @override
@@ -96,15 +102,52 @@ class _MyInformationState extends State<MyInformation>
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.w500),
                         ),
-                        IconButton(
-                            onPressed: () {
-                              isFav
-                                  ? _controller.reverse()
-                                  : _controller.forward();
-                            },
-                            icon: Icon(Icons.favorite,
-                                color: _colorAnimated.value,
-                                size: _sizeAnimated.value))
+                        // IconButton(
+                        //     onPressed: () {
+                        //       isFav
+                        //           ? _controller.reverse()
+                        //           : _controller.forward();
+                        //     },
+                        //     icon: Icon(Icons.favorite,
+                        //         color: _colorAnimated.value,
+                        //         size: _sizeAnimated.value))
+
+                        Obx(
+                          () => accountController.checklogin == false
+                              ? IconButton(
+                                  onPressed: () {
+                                    //chuyển tới trang login
+                                  },
+                                  icon: Icon(Icons.favorite))
+                              : isFav(location.id!) == true
+                                  ? IconButton(
+                                      onPressed: () async {
+                                        print(isFav(location.id!));
+                                        await accountController
+                                            .removeFromFavorites(
+                                                "${accountController.id}",
+                                                location.id!);
+                                        await accountController
+                                            .getAccount('minhthai123');
+                                      },
+                                      icon: Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                      ))
+                                  : IconButton(
+                                      onPressed: () async {
+                                        await accountController.addToFavorites(
+                                            "${accountController.id}",
+                                            location.id!);
+                                        await accountController
+                                            .getAccount('minhthai123');
+                                        print(isFav(location.id!));
+                                      },
+                                      icon: Icon(
+                                        Icons.favorite,
+                                        color: Colors.black,
+                                      )),
+                        )
                       ],
                     ),
                     SizedBox(
@@ -559,6 +602,11 @@ class _MyInformationState extends State<MyInformation>
                       Get.snackbar(
                         "Selected Date",
                         "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year} complete!",
+                        // icon: TextButton(
+                        //     onPressed: () {
+                        //       Get.to(TestLich());
+                        //     },
+                        //     child: Text('Xem lịch')),
                         snackPosition: SnackPosition.BOTTOM,
                       );
                       await accountController.addToSchedule(
@@ -570,6 +618,11 @@ class _MyInformationState extends State<MyInformation>
                       Get.snackbar(
                         "Selected Date",
                         "Bạn đã có lịch trình này",
+                        titleText: TextButton(
+                            onPressed: () {
+                              Get.to(TestLich());
+                            },
+                            child: Text('Xem lịch')),
                         snackPosition: SnackPosition.BOTTOM,
                       );
                     }
