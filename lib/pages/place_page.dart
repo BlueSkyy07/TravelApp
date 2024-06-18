@@ -23,9 +23,7 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
   late Animation _colorAnimated;
   late Animation<double> _sizeAnimated;
   // bool isFav = true;
-  // bool isFav() {
-  //   return accountController.isFavorite(accountController.id.value);
-  // }
+
   bool isFav(String userid) {
     String userID = userid;
     // locationController.posts[index].id!;

@@ -17,8 +17,6 @@ class TestLich extends StatelessWidget {
     final AccountController accountController = Get.put(AccountController());
     final LocationController locationController = Get.put(LocationController());
 
-    accountController.getAccount('minhthai123');
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -35,6 +33,7 @@ class TestLich extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Obx(() {
+          accountController.getAccount('minhthai123');
           return Column(
             children: [
               ...accountController.schedule.map((schedule) {

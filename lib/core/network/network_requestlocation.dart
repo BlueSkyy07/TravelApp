@@ -315,4 +315,30 @@ class dataServices {
       throw Exception("Failed to retrieve user");
     }
   }
+
+  Future<void> CreateUser(String username, String password, String email,
+      String phonenumber, String sex) async {
+    var response = await http.post(
+      Uri.parse(AccountUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+        'email': email,
+        'phonenumber': phonenumber,
+        'sex': sex,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print('Account created successfully');
+      return;
+    } else {
+      print('Failed to create Account: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to create Account");
+    }
+  }
 }

@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
-class FavoritePage extends StatefulWidget {
-  FavoritePage({super.key});
+class FavoriteTestPage extends StatefulWidget {
+  FavoriteTestPage({super.key});
 
   @override
-  State<FavoritePage> createState() => _FavoritePageState();
+  State<FavoriteTestPage> createState() => _FavoriteTestPageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
+class _FavoriteTestPageState extends State<FavoriteTestPage> {
   final LocationController location = Get.find();
   final AccountController favoriteController = Get.find();
 

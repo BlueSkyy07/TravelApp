@@ -121,6 +121,21 @@ class AccountController extends GetxController {
     }
   }
 
+  Future<void> CreateUser(String username, String password, String email,
+      String phonenumber, String sex) async {
+    isLoading.value = true;
+    try {
+      await dataServices()
+          .CreateUser(username, password, email, phonenumber, sex);
+
+      print("Schedule create successfully");
+    } catch (e) {
+      print('Error add Schedule: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> removeFromSchedule(
       String userId, String datetime, String localId) async {
     isLoading.value = true;
