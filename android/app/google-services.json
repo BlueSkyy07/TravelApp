@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "145799333330",
+    "project_id": "travelapp-cbdd5",
+    "storage_bucket": "travelapp-cbdd5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145799333330:android:0f787405d262f07339b40b",
+        "android_client_info": {
+          "package_name": "com.demo.exam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7yp0Te3VfPYDl-9sYyw-6PO_OiTp9TTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

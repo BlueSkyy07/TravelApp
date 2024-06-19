@@ -8,6 +8,7 @@ import 'package:exam/core/utils/app_utility.dart';
 import 'package:exam/core/values/image.dart';
 import 'package:exam/pages/detail_place_page.dart';
 import 'package:exam/pages/favorite_page.dart';
+import 'package:exam/pages/login.dart';
 import 'package:exam/pages/place_page.dart';
 import 'package:exam/pages/search_page.dart';
 import 'package:exam/pages/test.dart';
@@ -53,6 +54,10 @@ class DashboardController extends FullLifeCycleController
     tabIndex.value = index;
     pageController.jumpToPage(tabIndex.value);
     tabController.animateTo(index);
+  }
+
+  void getCategory() {
+    location.categoryLocations('beach');
   }
 
   @override
@@ -338,6 +343,13 @@ class DashboardController extends FullLifeCycleController
                   Get.to(FavoritePage());
                 },
                 child: Text('favorite')),
+            ElevatedButton(
+                onPressed: () {
+                  location.categoryLocations("beach");
+                  // print("category: ${location.categoryLocations("beach")}");
+                  print("categoryResult: ${location.categoryResults}");
+                },
+                child: Text('getCategory')),
           ],
         ),
         // color: Colors.red,
@@ -423,9 +435,10 @@ class DashboardController extends FullLifeCycleController
       ),
 
       FavoritePage(),
-      Container(
-        color: Colors.grey,
-      ),
+      LoginPage(),
+      // Container(
+      //   color: Colors.grey,
+      // ),
     ];
     tabController = TabController(length: pages.length, vsync: this);
     //
@@ -519,11 +532,11 @@ Widget buildLocationCard(
       Get.to(MyPlane());
     },
     child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
           border: Border.all(width: 1, color: Colors.black12),
           borderRadius: BorderRadius.all(Radius.circular(24))),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       height: 160,
       child: Row(
         children: [
@@ -540,7 +553,7 @@ Widget buildLocationCard(
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

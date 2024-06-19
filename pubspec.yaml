@@ -31,7 +31,8 @@ dependencies:
   insta_image_viewer: ^1.0.4
   velocity_x: ^4.1.2
   date_picker_plus: ^4.0.0
-
+  firebase_core: ^3.1.0
+  firebase_auth: ^5.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

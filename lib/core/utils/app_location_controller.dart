@@ -15,6 +15,7 @@ class LocationController extends GetxController {
   RxString userId = ''.obs;
   RxList<Account> favoriteResults = RxList<Account>();
   RxList<Post> searchResults = RxList<Post>();
+  RxList<Post> categoryResults = RxList<Post>();
 
   @override
   void onInit() {
@@ -60,5 +61,14 @@ class LocationController extends GetxController {
   List<Post> getPostsBySchedule(List<Schedule> schedules) {
     final scheduleIds = schedules.expand((s) => s.id ?? []).toList();
     return posts.where((post) => scheduleIds.contains(post.id)).toList();
+  }
+
+  void categoryLocations(String category) {
+    categoryResults.value = [];
+    categoryResults.value = posts.where((location) {
+      final lowerQuery = category.toLowerCase();
+      return (location.location?.toLowerCase().contains(lowerQuery) ?? false);
+    }).toList();
+    // print(searchResults);
   }
 }
