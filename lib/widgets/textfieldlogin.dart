@@ -1,35 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 Widget buildTextFieldLogin({
   required TextEditingController controller,
   required String hintText,
-  required Widget prefixIcon,
-  required Widget? suffixIcon,
+  required String labelText,
+  required Icon prefixIcon,
   bool obscureText = false,
 }) {
-  return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            offset: Offset(2, 4),
-            color: Colors.black12,
-            blurRadius: 2,
-          ),
-        ],
+  return TextField(
+    textInputAction: TextInputAction.done,
+    keyboardType: TextInputType.emailAddress,
+    decoration: InputDecoration(
+      hintText: hintText,
+      labelText: labelText,
+      labelStyle: TextStyle(
+        color: Colors.grey,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: hintText,
-              prefixIcon: prefixIcon,
-              suffixIcon: suffixIcon != null ? suffixIcon : null,
-            )),
-      ));
+      floatingLabelStyle: TextStyle(color: Colors.blue),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.blue,
+        ),
+      ),
+      focusColor: Colors.blue,
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          width: 2,
+          color: Colors.blue,
+        ),
+      ),
+      prefixIcon: prefixIcon,
+    ),
+    obscureText: obscureText,
+    controller: controller,
+  );
 }

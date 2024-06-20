@@ -100,7 +100,7 @@ Widget buildFavoriteCard(
                     print('click favorite');
                     await accountController.removeFromFavorites(
                         "${accountController.id}", postId);
-                    accountController.getAccount('minhthai123');
+                    accountController.getAccount(accountController.email.value);
                   },
                   child: Container(
                     height: 30,

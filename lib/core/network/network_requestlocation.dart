@@ -58,7 +58,7 @@ class dataServices {
     return accountFromJson(response.body);
   }
 
-  Future<void> GetAccount(String userName) async {
+  Future<void> GetAccount(String userEmail) async {
     final AccountController accountController = Get.put(AccountController());
     try {
       final response = await http
@@ -67,7 +67,7 @@ class dataServices {
         var jsonResponse = json.decode(response.body) as List;
         var user = jsonResponse
             .map((item) => Account.fromJson(item))
-            .firstWhere((user) => user.username == userName);
+            .firstWhere((user) => user.email == userEmail);
 
         accountController.id.value = user.id!;
         accountController.username.value = user.username!;
@@ -75,6 +75,7 @@ class dataServices {
         accountController.phonenumber.value = user.phonenumber!;
         accountController.favorite.value = user.favorite ?? [];
         accountController.schedule.value = user.schedule ?? [];
+        accountController.email.value = user.email!;
       } else {
         print("Failed to load users");
       }

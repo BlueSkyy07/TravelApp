@@ -139,8 +139,8 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
                                               .removeFromFavorites(
                                                   "${accountController.id}",
                                                   location.id!);
-                                          await accountController
-                                              .getAccount('minhthai123');
+                                          await accountController.getAccount(
+                                              accountController.email.value);
                                         },
                                         icon: Icon(
                                           Icons.favorite,
@@ -152,8 +152,8 @@ class _MyPlaneState extends State<MyPlane> with SingleTickerProviderStateMixin {
                                               .addToFavorites(
                                                   "${accountController.id}",
                                                   location.id!);
-                                          await accountController
-                                              .getAccount('minhthai123');
+                                          await accountController.getAccount(
+                                              accountController.email.value);
                                           print(isFav(location.id!));
                                         },
                                         icon: Icon(

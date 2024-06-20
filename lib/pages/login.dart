@@ -1,8 +1,8 @@
-import 'package:exam/widgets/textfieldlogin.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:exam/core/utils/app_account_controller.dart';
+import 'package:exam/pages/register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -12,31 +12,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final AccountController accountController = Get.put(AccountController());
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // final ControllerLogin showPass = Get.put(ControllerLogin());
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  bool _obscureText = true;
 
   Future signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim());
-      print("dang nhap thanh cong ");
+      accountController.ChangeLogin();
+      await accountController.getAccount(_emailController.text);
+      print("Đăng nhập thành công");
+      // Điều hướng đến trang khác, ví dụ: trang chủ
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        // Get.defaultDialog(
-        //   title: "GeeksforGeeks",
-        //   middleText: "Hello world!",
-        //   backgroundColor: Colors.green,
-        //   titleStyle: TextStyle(color: Colors.white),
-        //   middleTextStyle: TextStyle(color: Colors.white),
-        // );
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text("Error"),
-            content: Text("Invalid email or password. Please try again."),
+            title: Text("Lỗi"),
+            content:
+                Text("Email hoặc mật khẩu không hợp lệ. Vui lòng thử lại."),
             actions: [
               TextButton(
                 onPressed: () {
@@ -55,143 +54,231 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(() => setState(() {}));
+    _passwordController.addListener(() => setState(() {}));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    // showPass.showPassword.value = false;
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background image
-          // Positioned(
-          //   top: 0,
-          //   child: Image.asset(
-          //     // AppAssets.backgroundLogin1,
-          //   ),
-          // ),
-          // Positioned(
-          //   bottom: 0,
-          //   child: Image.asset(
-          //     AppAssets.backgroundLogin2,
-          //   ),
-          // ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+      resizeToAvoidBottomInset: false,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 100),
+                      Text(
+                        "traver",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 50),
+                      TextField(
+                        focusNode: _emailFocusNode,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          labelText: 'Email',
+                          labelStyle: TextStyle(
+                            color: Colors.grey,
+                          ),
+                          floatingLabelStyle: TextStyle(color: Colors.blue),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                            ),
+                          ),
+                          focusColor: Colors.blue,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              width: 2,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.email,
+                            color: _emailFocusNode.hasFocus
+                                ? Colors.red
+                                : Colors.grey,
+                          ),
+                          suffixIcon: _emailController.text.isEmpty
+                              ? Container(width: 0)
+                              : IconButton(
+                                  onPressed: () {
+                                    _emailController.clear();
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                        ),
+                        controller: _emailController,
+                      ),
+                      SizedBox(height: 20),
+                      TextField(
+                        focusNode: _passwordFocusNode,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          labelText: 'Password',
+                          labelStyle: TextStyle(
+                            color: Colors.grey,
+                          ),
+                          floatingLabelStyle: TextStyle(color: Colors.blue),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                            ),
+                          ),
+                          focusColor: Colors.blue,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              width: 2,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.lock,
+                            color: _passwordFocusNode.hasFocus
+                                ? Colors.red
+                                : Colors.grey,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: _passwordFocusNode.hasFocus
+                                  ? Colors.red
+                                  : Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: _obscureText,
+                        controller: _passwordController,
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(width: 0),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text("Quên mật khẩu"),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+              Column(
                 children: [
-                  SizedBox(
-                    height: 80,
-                  ),
                   Container(
-                    // height: size.height * 2 / 7,
-                    child: Text(
-                      'Hello',
-                      style:
-                          TextStyle(fontSize: 70, fontWeight: FontWeight.bold),
+                    height: 60,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(width: 1, color: Colors.grey),
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    // height: size.height * 1 / 8,
-                    child: Text(
-                      'Sign in to your account',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  buildTextFieldLogin(
-                    controller: _emailController,
-                    hintText: "Email",
-                    prefixIcon: Icon(Icons.email),
-                    suffixIcon: null,
-                  ),
-                  SizedBox(height: 40),
-                  buildTextFieldLogin(
-                    controller: _passwordController,
-                    hintText: "password",
-                    prefixIcon: Icon(Icons.email),
-                    suffixIcon: null,
-                  ),
-                  SizedBox(height: 40),
-                  // Obx(() => buildTextFieldLogin(
-                  //       controller: _passwordController,
-                  //       obscureText: !showPass.showPassword.value,
-                  //       hintText: "Password",
-                  //       prefixIcon: Image.asset(
-                  //         AppAssets.password,
-                  //         height: 22,
-                  //         width: 26,
-                  //       ),
-                  //       suffixIcon: IconButton(
-                  //         icon: Icon(
-                  //           showPass.showPassword.value
-                  //               ? Icons.visibility
-                  //               : Icons.visibility_off,
-                  //         ),
-                  //         onPressed: () {
-                  //           showPass.ShowTextPssword();
-                  //         },
-                  //       ),
-                  //     )),
-                  SizedBox(height: 20),
-                  Container(
-                    height: 50,
-                    alignment: Alignment.centerRight, // Align text to the right
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Forgot your password?',
-                        style: TextStyle(color: Colors.black38),
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(RegisterPage());
+                      },
+                      child: Center(
+                        child: Text(
+                          "Tạo tài khoản",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Sign in',
+                    height: 60,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: Colors.yellow,
+                    ),
+                    child: InkWell(
+                      onTap: signIn,
+                      child: Center(
+                        child: Text(
+                          "Đăng nhập",
                           style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Container(
-                          height: 34,
-                          width: 56,
-                          decoration: BoxDecoration(
-                              // color: const Color.fromRGBO(249, 119, 147, 5),
-                              gradient: LinearGradient(colors: [
-                                Color(0xFFE45171),
-                                Color.fromARGB(255, 148, 33, 224),
-                              ]),
-                              borderRadius: BorderRadius.circular(24)),
-                          child: InkWell(
-                            onTap: signIn,
-                            child: Text('sign in'),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                        )
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.camera_alt),
+                          onPressed: () {
+                            // Đăng nhập Instagram
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.email),
+                          onPressed: () {
+                            // Đăng nhập Google
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.facebook),
+                          onPressed: () {
+                            // Đăng nhập Facebook
+                          },
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 30,
-                  ),
                 ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -559,7 +559,8 @@ class _MyInformationState extends State<MyInformation>
                           )
                         : ElevatedButton(
                             onPressed: () async {
-                              await accountController.getAccount('minhthai123');
+                              await accountController
+                                  .getAccount(accountController.email.value);
                               _showDatePicker(context, location.id!);
                             },
                             child: Text('book'),
@@ -602,17 +603,14 @@ class _MyInformationState extends State<MyInformation>
                       Get.snackbar(
                         "Selected Date",
                         "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year} complete!",
-                        // icon: TextButton(
-                        //     onPressed: () {
-                        //       Get.to(TestLich());
-                        //     },
-                        //     child: Text('Xem lịch')),
                         snackPosition: SnackPosition.BOTTOM,
                       );
                       await accountController.addToSchedule(
                           accountController.id.value,
                           "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}",
                           localId);
+                      await accountController
+                          .getAccount(accountController.email.value);
                     } else {
                       Navigator.pop(context);
                       Get.snackbar(

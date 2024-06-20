@@ -16,7 +16,6 @@ class TestLich extends StatelessWidget {
   Widget build(BuildContext context) {
     final AccountController accountController = Get.put(AccountController());
     final LocationController locationController = Get.put(LocationController());
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -33,7 +32,6 @@ class TestLich extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Obx(() {
-          accountController.getAccount('minhthai123');
           return Column(
             children: [
               ...accountController.schedule.map((schedule) {
@@ -142,7 +140,8 @@ Widget buildLocationCard(Post post, String image, String title,
                               await accountController.removeFromSchedule(
                                   '${accountController.id}', datetime, localId);
                               // Refresh account data after removing item
-                              await accountController.getAccount('minhthai123');
+                              await accountController
+                                  .getAccount(accountController.email.value);
                             },
                             child: Icon(
                               Icons.delete,

@@ -28,7 +28,8 @@ class _UserScreenState extends State<UserScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       accountController.ChangeLogin();
-                      await accountController.getAccount('minhthai123');
+                      await accountController
+                          .getAccount(accountController.email.value);
                     },
                     child: Text('Get User'),
                   ),

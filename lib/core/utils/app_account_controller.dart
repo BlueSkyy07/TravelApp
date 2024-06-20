@@ -15,6 +15,7 @@ class AccountController extends GetxController {
   RxList<Account> favoriteResults = RxList<Account>();
   RxString idAccount = ''.obs;
   RxString username = ''.obs;
+  RxString email = ''.obs;
   RxString id = ''.obs;
   RxString sex = ''.obs;
   RxString phonenumber = ''.obs;
@@ -65,10 +66,10 @@ class AccountController extends GetxController {
     print(checklogin.value);
   }
 
-  Future<void> getAccount(String UserName) async {
+  Future<void> getAccount(String userEmail) async {
     isLoading.value = true;
     try {
-      await dataServices().GetAccount(UserName);
+      await dataServices().GetAccount(userEmail);
       print("ten User: ${username.value}");
       print("phonenumber: ${phonenumber.value}");
       print("Id: ${id}");

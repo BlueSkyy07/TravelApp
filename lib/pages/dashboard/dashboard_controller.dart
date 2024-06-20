@@ -73,41 +73,45 @@ class DashboardController extends FullLifeCycleController
           child: Container(
             child: Column(
               children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            child: CircleAvatar(
-                              radius: 20,
-                              backgroundImage: NetworkImage(
-                                  'https://static.wikia.nocookie.net/naruto/images/b/bb/Itachi.png/revision/latest/scale-to-width-down/300?cb=20220214112531'),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Obx(
-                            () => Container(
-                              child: Text(
-                                "${account.username}",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.black),
+                Obx(
+                  () => account.checklogin.value == true
+                      ? Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(
+                                          'https://static.wikia.nocookie.net/naruto/images/b/bb/Itachi.png/revision/latest/scale-to-width-down/300?cb=20220214112531'),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Obx(
+                                    () => Container(
+                                      child: Text(
+                                        "${account.username}",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.black),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Container(
-                        child: InkWell(
-                          onTap: () {},
-                          child: Icon(Icons.notifications_none),
-                        ),
-                      )
-                    ],
-                  ),
+                              Container(
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Icon(Icons.notifications_none),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      : Container(),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 40),
@@ -435,7 +439,14 @@ class DashboardController extends FullLifeCycleController
       ),
 
       FavoritePage(),
-      LoginPage(),
+      Obx(
+        () => account.checklogin.value == true
+            ? Container(
+                child: Text("Dang nhap thanh cong"),
+              )
+            : LoginPage(),
+      )
+
       // Container(
       //   color: Colors.grey,
       // ),
@@ -772,7 +783,8 @@ Widget BuildScheduleCard(Post post, String image, String title,
                               await accountController.removeFromSchedule(
                                   '${accountController.id}', datetime, localId);
                               // Refresh account data after removing item
-                              await accountController.getAccount('minhthai123');
+                              await accountController
+                                  .getAccount(accountController.email.value);
                             },
                             child: Icon(
                               Icons.delete,
