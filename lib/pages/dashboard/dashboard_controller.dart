@@ -14,6 +14,7 @@ import 'package:exam/pages/search_page.dart';
 import 'package:exam/pages/test.dart';
 import 'package:exam/pages/testlich.dart';
 import 'package:exam/pages/testthongtinaccount.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -339,7 +340,12 @@ class DashboardController extends FullLifeCycleController
                 child: Text('remove schedule')),
             ElevatedButton(
                 onPressed: () {
-                  account.CreateUser('123', '123', '123', '123', '123');
+                  account.CreateUser(
+                    '123',
+                    '123',
+                    '123',
+                    '123',
+                  );
                 },
                 child: Text('CreateUsers 123')),
             ElevatedButton(
@@ -365,84 +371,20 @@ class DashboardController extends FullLifeCycleController
       //   },
       //   child: Text('data'),
       // )),
-      Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Schedule",
-            style: TextStyle(fontSize: 30),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Get.to(SearchPage());
-          },
-          child: Icon(Icons.add),
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Obx(() {
-            account.checklogin.value == true
-                ? account.getAccount('minhthai123')
-                : Container();
-            return Column(
-              children: [
-                ...account.schedule.map((schedule) {
-                  final schedulePosts = location.getPostsBySchedule([schedule]);
-
-                  return Container(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.black12),
-                      borderRadius: BorderRadius.all(Radius.circular(24)),
-                    ),
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 60,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(24),
-                                topRight: Radius.circular(24)),
-                            color: lich,
-                          ),
-                          child:
-                              Center(child: Text("Date: ${schedule.datetime}")),
-                        ),
-                        Column(children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: schedulePosts.length,
-                            itemBuilder: (context, index) {
-                              final post = schedulePosts[index];
-                              return BuildScheduleCard(
-                                  post,
-                                  post.image!,
-                                  post.title!,
-                                  post.description!,
-                                  post.rating?.rate?.toDouble() ?? 0.0,
-                                  "${schedule.datetime}",
-                                  post.id!);
-                            },
-                          ),
-                        ]),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ],
-            );
-          }),
-        ),
-      ),
+      TestLich(),
 
       FavoritePage(),
       Obx(
         () => account.checklogin.value == true
             ? Container(
-                child: Text("Dang nhap thanh cong"),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    account.checklogin.value = false;
+                    print("${account.checklogin.value}");
+                  },
+                  child: Text("log out"),
+                ),
               )
             : LoginPage(),
       )

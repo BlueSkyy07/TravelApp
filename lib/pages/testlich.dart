@@ -17,79 +17,83 @@ class TestLich extends StatelessWidget {
     final AccountController accountController = Get.put(AccountController());
     final LocationController locationController = Get.put(LocationController());
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Schedule",
-          style: TextStyle(fontSize: 30),
+        appBar: AppBar(
+          title: Text(
+            "Schedule",
+            style: TextStyle(fontSize: 30),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.to(SearchPage());
-        },
-        child: Icon(Icons.add),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Obx(() {
-          return Column(
-            children: [
-              ...accountController.schedule.map((schedule) {
-                final schedulePosts =
-                    locationController.getPostsBySchedule([schedule]);
-
-                return Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: Colors.black12),
-                    borderRadius: BorderRadius.all(Radius.circular(24)),
-                  ),
-                  width: double.infinity,
-                  child: Column(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Get.to(SearchPage());
+          },
+          child: Icon(Icons.add),
+        ),
+        body: Obx(() => accountController.checklogin.value == true
+            ? SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Obx(() {
+                  accountController.getAccount(accountController.email.value);
+                  return Column(
                     children: [
-                      Container(
-                        height: 60,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(24),
-                              topRight: Radius.circular(24)),
-                          color: lich,
-                        ),
-                        child:
-                            Center(child: Text("Date: ${schedule.datetime}")),
-                      ),
-                      Column(children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: schedulePosts.length,
-                          itemBuilder: (context, index) {
-                            final post = schedulePosts[index];
-                            return buildLocationCard(
-                                post,
-                                post.image!,
-                                post.title!,
-                                post.description!,
-                                post.rating?.rate?.toDouble() ?? 0.0,
-                                "${schedule.datetime}",
-                                post.id!);
-                          },
-                        ),
-                      ]),
+                      ...accountController.schedule.map((schedule) {
+                        final schedulePosts =
+                            locationController.getPostsBySchedule([schedule]);
+
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.black12),
+                            borderRadius: BorderRadius.all(Radius.circular(24)),
+                          ),
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 60,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(24),
+                                      topRight: Radius.circular(24)),
+                                  color: lich,
+                                ),
+                                child: Center(
+                                    child: Text("Date: ${schedule.datetime}")),
+                              ),
+                              Column(children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: schedulePosts.length,
+                                  itemBuilder: (context, index) {
+                                    final post = schedulePosts[index];
+                                    return BuildScheduleCard(
+                                        post,
+                                        post.image!,
+                                        post.title!,
+                                        post.description!,
+                                        post.rating?.rate?.toDouble() ?? 0.0,
+                                        "${schedule.datetime}",
+                                        post.id!);
+                                  },
+                                ),
+                              ]),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                     ],
-                  ),
-                );
-              }).toList(),
-            ],
-          );
-        }),
-      ),
-    );
+                  );
+                }),
+              )
+            : Center(
+                child: Text("Please log in to continue this function"),
+              )));
   }
 }
 
-Widget buildLocationCard(Post post, String image, String title,
+Widget BuildScheduleCard(Post post, String image, String title,
     String description, double rate, String datetime, String localId) {
   final LocationController locationController = Get.put(LocationController());
   final AccountController accountController = Get.put(AccountController());

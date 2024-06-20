@@ -29,24 +29,25 @@ class _LoginPageState extends State<LoginPage> {
       print("Đăng nhập thành công");
       // Điều hướng đến trang khác, ví dụ: trang chủ
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text("Lỗi"),
-            content:
-                Text("Email hoặc mật khẩu không hợp lệ. Vui lòng thử lại."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // Đóng dialog
-                },
-                child: Text("OK"),
-              ),
-            ],
-          ),
-        );
-      }
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Center(
+              child: Text(
+            "Login failed",
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          )),
+          content: Text("Email or Password is invalid. Please try again."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Đóng dialog
+              },
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -165,21 +166,25 @@ class _LoginPageState extends State<LoginPage> {
                                 ? Colors.red
                                 : Colors.grey,
                           ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: _passwordFocusNode.hasFocus
-                                  ? Colors.red
-                                  : Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
+                          suffixIcon: _passwordController.text.isEmpty
+                              ? Container(
+                                  width: 0,
+                                )
+                              : IconButton(
+                                  icon: Icon(
+                                    _obscureText
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: _passwordFocusNode.hasFocus
+                                        ? Colors.red
+                                        : Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                ),
                         ),
                         obscureText: _obscureText,
                         controller: _passwordController,

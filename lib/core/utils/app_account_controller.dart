@@ -122,12 +122,11 @@ class AccountController extends GetxController {
     }
   }
 
-  Future<void> CreateUser(String username, String password, String email,
-      String phonenumber, String sex) async {
+  Future<void> CreateUser(
+      String password, String email, String phonenumber, String sex) async {
     isLoading.value = true;
     try {
-      await dataServices()
-          .CreateUser(username, password, email, phonenumber, sex);
+      await dataServices().CreateUser(email, password, phonenumber, sex);
 
       print("Schedule create successfully");
     } catch (e) {
