@@ -9,13 +9,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
-class TestLich extends StatelessWidget {
-  const TestLich({super.key});
+class TestLich extends StatefulWidget {
+  TestLich({super.key});
+
+  @override
+  State<TestLich> createState() => _TestLichState();
+}
+
+class _TestLichState extends State<TestLich> {
+  final AccountController accountController = Get.put(AccountController());
+  final LocationController locationController = Get.put(LocationController());
+  @override
+  void onInit() async {
+    accountController.getAccount(accountController.email.value);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AccountController accountController = Get.put(AccountController());
-    final LocationController locationController = Get.put(LocationController());
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -33,7 +43,7 @@ class TestLich extends StatelessWidget {
             ? SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Obx(() {
-                  accountController.getAccount(accountController.email.value);
+                  // accountController.getAccount(accountController.email.value);
                   return Column(
                     children: [
                       ...accountController.schedule.map((schedule) {

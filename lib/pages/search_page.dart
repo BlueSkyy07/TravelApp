@@ -1,4 +1,5 @@
 import 'package:exam/core/model/account.dart';
+import 'package:exam/core/model/post.dart';
 import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/values/colors.dart';
@@ -53,7 +54,12 @@ class _SearchPageState extends State<SearchPage> {
             Container(
               height: 50,
               child: TextField(
-                onSubmitted: (value) {},
+                onSubmitted: (value) {
+                  locationController.searchLocations(searchController.text);
+                  setState(() {
+                    showResults = true;
+                  });
+                },
                 textInputAction: TextInputAction.search,
                 controller: searchController,
                 decoration: InputDecoration(
@@ -68,10 +74,10 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: onSearchPressed,
-              child: Text('Search'),
-            ),
+            // ElevatedButton(
+            //   onPressed: onSearchPressed,
+            //   child: Text('Search'),
+            // ),
             showResults
                 ? Expanded(
                     child: Obx(() {
@@ -95,6 +101,7 @@ class _SearchPageState extends State<SearchPage> {
                                 Get.to(MyPlane());
                               },
                               child: buildLocationCard(
+                                location,
                                 location.image!,
                                 location.title!,
                                 location.description!,
@@ -156,27 +163,6 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     )
-                    // SingleChildScrollView(
-                    //   scrollDirection: Axis.horizontal,
-                    //   child: Column(
-                    //     children: [
-                    //       Container(
-                    //         child: Row(
-                    //           children:
-                    //               List.generate(favoritePosts.length, (index) {
-                    //             final post = favoritePosts[index];
-                    //             return buildFavoriteCard(
-                    //               post.image!,
-                    //               post.title!,
-                    //               post.location!,
-                    //               post.rating?.rate?.toDouble() ?? 0.0,
-                    //             );
-                    //           }),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 );
               })
@@ -317,12 +303,20 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }
 
 Widget buildLocationCard(
-    String image, String title, String description, double rate) {
+    Post post, String image, String title, String description, double rate) {
+  final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+  bool isFav() {
+    String userID = post.id!;
+    return accountController.isFavorite(userID);
+  }
+
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8),
     height: 120,
@@ -359,13 +353,14 @@ Widget buildLocationCard(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        InkWell(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.favorite_border,
-                            color: Colors.black12,
-                          ),
-                        )
+                        Obx(() => accountController.checklogin == false
+                            ? Icon(Icons.favorite_border)
+                            : isFav() == true
+                                ? Icon(
+                                    Icons.favorite,
+                                    color: Colors.red,
+                                  )
+                                : Icon(Icons.favorite_border))
                       ],
                     ),
                     Row(
