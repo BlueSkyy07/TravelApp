@@ -197,7 +197,8 @@ class DashboardController extends FullLifeCycleController
                   ),
                 ),
                 Obx(
-                  () => account.checklogin.value == true
+                  () => (account.checklogin.value == true &&
+                          !account.favorite.isEmpty)
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Container(
@@ -225,7 +226,8 @@ class DashboardController extends FullLifeCycleController
                       : Container(),
                 ),
                 Obx(
-                  () => account.checklogin.value == true
+                  () => (account.checklogin.value == true &&
+                          !account.favorite.isEmpty)
                       ? Obx(() {
                           final favoritePosts = location.posts.where((post) {
                             return account.isFavorite(post.id!);
@@ -340,12 +342,7 @@ class DashboardController extends FullLifeCycleController
                 child: Text('remove schedule')),
             ElevatedButton(
                 onPressed: () {
-                  account.CreateUser(
-                    '123',
-                    '123',
-                    '123',
-                    '123',
-                  );
+                  account.CreateUser('123', '123', '123', '123', '123');
                 },
                 child: Text('CreateUsers 123')),
             ElevatedButton(
@@ -376,18 +373,66 @@ class DashboardController extends FullLifeCycleController
       FavoritePage(),
       Obx(
         () => account.checklogin.value == true
-            ? Container(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    account.checklogin.value = false;
-                    print("${account.checklogin.value}");
-                  },
-                  child: Text("log out"),
-                ),
+            ? StreamBuilder<User?>(
+                stream: FirebaseAuth.instance.authStateChanges(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      height: 100,
+                      width: 100,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          account.checklogin.value = false;
+                          print("${account.checklogin.value}");
+                        },
+                        child: Text("log out"),
+                      ),
+                    );
+                  } else {
+                    return LoginPage();
+                  }
+                },
               )
+            // Container(
+            //     height: 100,
+            //     width: 100,
+            //     child: ElevatedButton(
+            //       onPressed: () async {
+            //         await FirebaseAuth.instance.signOut();
+            //         account.checklogin.value = false;
+            //         print("${account.checklogin.value}");
+            //       },
+            //       child: Text("log out"),
+            //     ),
+            //   )
             : LoginPage(),
       )
+      // Obx(() => account.checklogin.value == true
+      //     ? StreamBuilder<User?>(
+      //         stream: FirebaseAuth.instance.authStateChanges(),
+      //         builder: (context, snapshot) {
+      //           if (snapshot.hasData) {
+      //             account.checklogin.value = true;
+      //             return Container(
+      //               height: 100,
+      //               width: 100,
+      //               child: ElevatedButton(
+      //                 onPressed: () async {
+      //                   await FirebaseAuth.instance.signOut();
+      //                   account.checklogin.value = false;
+      //                   print("${account.checklogin.value}");
+      //                 },
+      //                 child: Text("log out"),
+      //               ),
+      //             );
+      //           } else {
+      //             account.checklogin.value = false;
+      //             return LoginPage();
+      //           }
+      //         },
+      //       )
+      //     : LoginPage())
 
       // Container(
       //   color: Colors.grey,

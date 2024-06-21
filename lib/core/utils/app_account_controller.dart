@@ -19,6 +19,7 @@ class AccountController extends GetxController {
   RxString id = ''.obs;
   RxString sex = ''.obs;
   RxString phonenumber = ''.obs;
+  RxBool checkreg = false.obs;
   var schedule = <Schedule>[].obs;
   var favorite = <String>[].obs;
   // var schedule = Schedule(
@@ -64,6 +65,11 @@ class AccountController extends GetxController {
   void ChangeLogin() {
     checklogin.value = true;
     print(checklogin.value);
+  }
+
+  void changeReg() {
+    checkreg.value = !checkreg.value;
+    print(checkreg.value);
   }
 
   Future<void> getAccount(String userEmail) async {
@@ -122,11 +128,12 @@ class AccountController extends GetxController {
     }
   }
 
-  Future<void> CreateUser(
-      String password, String email, String phonenumber, String sex) async {
+  Future<void> CreateUser(String fullname, String password, String email,
+      String phonenumber, String sex) async {
     isLoading.value = true;
     try {
-      await dataServices().CreateUser(email, password, phonenumber, sex);
+      await dataServices()
+          .CreateUser(fullname, email, password, phonenumber, sex);
 
       print("Schedule create successfully");
     } catch (e) {

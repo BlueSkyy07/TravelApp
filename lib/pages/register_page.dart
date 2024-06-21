@@ -1,4 +1,7 @@
 import 'package:exam/core/utils/app_account_controller.dart';
+import 'package:exam/core/utils/app_routes.dart';
+import 'package:exam/main.dart';
+import 'package:exam/pages/dashboard/dashboard_controller.dart';
 import 'package:exam/pages/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,56 +17,31 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final AccountController accountController = Get.put(AccountController());
   final _emailController = TextEditingController();
+  final _fullnameController = TextEditingController();
+
   final _passwordController = TextEditingController();
   final _enterPasswordController = TextEditingController();
   final _phoneNumberController = TextEditingController();
   final _emailFocusNode = FocusNode();
+  final _fullnameFocusNode = FocusNode();
+
   final _passwordFocusNode = FocusNode();
   final _enterPasswordFocusNode = FocusNode();
   final _phoneNumberFocusNode = FocusNode();
+
   bool _obscurePassword = true;
   bool _obscureEnterPassword = true;
   String? _selectedGender;
   List<String> _genders = ['Male', 'Female', 'Other'];
 
-  // Future<void> signUp() async {
-  //   String email = _emailController.text.trim();
-  //   String password = _passwordController.text.trim();
-  //   final _auth = FirebaseAuth.instance;
-  //   // Kiểm tra mật khẩu có đủ 8 ký tự không
-  //   if (password.length < 8) {
-  //     print('Mật khẩu phải chứa ít nhất 8 ký tự!');
-  //     return showDialog(
-  //       context: context,
-  //       builder: (context) => AlertDialog(
-  //         title: Text("Error"),
-  //         content: Text("Mật khẩu phải chứa ít nhất 8 ký tự!"),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: Text("OK"),
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   }
-  //   final userCredential = await _auth.createUserWithEmailAndPassword(
-  //       email: email, password: password);
-  //   final user = userCredential.user;
-  //   await _auth.createUserWithEmailAndPassword(
-  //       email: email, password: password);
-
-  // }
   Future<void> signUp() async {
+    String fullname = _fullnameController.text;
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String enterPassword = _enterPasswordController.text.trim();
     String phonenumber = _phoneNumberController.text.trim();
     String gender = _selectedGender.toString();
     final _auth = FirebaseAuth.instance;
-
     if (password.isEmpty ||
         email.isEmpty ||
         enterPassword.isEmpty ||
@@ -89,7 +67,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       );
     }
-
     // Kiểm tra mật khẩu có đủ 8 ký tự không
     if (password.length < 8) {
       return showDialog(
@@ -110,7 +87,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       );
     }
-
     // Kiểm tra mật khẩu có trùng khớp không
     if (password != enterPassword) {
       return showDialog(
@@ -131,7 +107,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       );
     }
-
     try {
       // Tạo người dùng với email và mật khẩu
       UserCredential userCredential =
@@ -139,9 +114,13 @@ class _RegisterPageState extends State<RegisterPage> {
         email: email,
         password: password,
       );
-      await accountController.CreateUser(email, password, phonenumber, gender);
       // Đăng ký thành công
       print("Đăng ký thành công: ${userCredential.user?.email}");
+
+      await accountController.CreateUser(
+          fullname, email, password, phonenumber, gender);
+
+      await FirebaseAuth.instance.signOut();
 
       showDialog(
         context: context,
@@ -150,10 +129,9 @@ class _RegisterPageState extends State<RegisterPage> {
           content: Text("Đăng ký thành công!"),
           actions: [
             TextButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                accountController.checklogin.value = false;
-                Get.offAll(() => LoginPage());
+              onPressed: () {
+                Navigator.of(context).pop();
+                accountController.changeReg();
               },
               child: Text("OK"),
             ),
@@ -212,10 +190,14 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     _emailController.dispose();
+    _fullnameController.dispose();
+
     _passwordController.dispose();
     _enterPasswordController.dispose();
     _phoneNumberController.dispose();
     _emailFocusNode.dispose();
+    _fullnameFocusNode.dispose();
+
     _passwordFocusNode.dispose();
     _enterPasswordFocusNode.dispose();
     _phoneNumberFocusNode.dispose();
@@ -225,6 +207,8 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
+    _fullnameController.addListener(() => setState(() {}));
+
     _emailController.addListener(() => setState(() {}));
     _passwordController.addListener(() => setState(() {}));
     _enterPasswordController.addListener(() => setState(() {}));
@@ -253,11 +237,57 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       SizedBox(height: 20),
                       TextField(
+                        focusNode: _fullnameFocusNode,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'Pham Minh Thai',
+                          labelText: 'Full name',
+                          labelStyle: TextStyle(
+                            color: Colors.grey,
+                          ),
+                          floatingLabelStyle: TextStyle(color: Colors.blue),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                            ),
+                          ),
+                          focusColor: Colors.blue,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              width: 2,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.account_circle,
+                            color: _fullnameFocusNode.hasFocus
+                                ? Colors.red
+                                : Colors.grey,
+                          ),
+                          suffixIcon: _fullnameController.text.isEmpty
+                              ? Container(width: 0)
+                              : IconButton(
+                                  onPressed: () {
+                                    _fullnameController.clear();
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                        ),
+                        controller: _fullnameController,
+                      ),
+                      SizedBox(height: 20),
+                      TextField(
                         focusNode: _emailFocusNode,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'Email',
+                          hintText: 'minhthai@example.com',
                           labelText: 'Email',
                           labelStyle: TextStyle(
                             color: Colors.grey,
@@ -302,7 +332,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: _passwordFocusNode,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          hintText: 'Password',
+                          hintText: 'Minhthai123',
                           labelText: 'Password',
                           labelStyle: TextStyle(
                             color: Colors.grey,
@@ -356,7 +386,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: _enterPasswordFocusNode,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          hintText: 'Enter the password',
+                          hintText: 'Minhthai123',
                           labelText: 'Enter the password',
                           labelStyle: TextStyle(
                             color: Colors.grey,
@@ -412,7 +442,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          hintText: 'Phone Number',
+                          hintText: '097223463',
                           labelText: 'Phone Number',
                           labelStyle: TextStyle(
                             color: Colors.grey,
@@ -536,7 +566,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.to(LoginPage());
+                          accountController.changeReg();
                         },
                         child: Text(
                           ' Login now',

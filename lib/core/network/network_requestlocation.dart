@@ -317,14 +317,15 @@ class dataServices {
     }
   }
 
-  Future<void> CreateUser(
-      String password, String email, String phonenumber, String sex) async {
+  Future<void> CreateUser(String fullname, String password, String email,
+      String phonenumber, String sex) async {
     var response = await http.post(
       Uri.parse(AccountUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
+        'username': fullname,
         'email': email,
         'password': password,
         'phonenumber': phonenumber,
