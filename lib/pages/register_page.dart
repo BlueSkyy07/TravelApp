@@ -116,28 +116,28 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       // Đăng ký thành công
       print("Đăng ký thành công: ${userCredential.user?.email}");
-
+      accountController.changeReg();
       await accountController.CreateUser(
           fullname, email, password, phonenumber, gender);
 
-      await FirebaseAuth.instance.signOut();
+      await accountController.getAccount(email);
 
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Success"),
-          content: Text("Đăng ký thành công!"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                accountController.changeReg();
-              },
-              child: Text("OK"),
-            ),
-          ],
-        ),
-      );
+      // showDialog(
+      //   context: context,
+      //   builder: (context) => AlertDialog(
+      //     title: Text("Success"),
+      //     content: Text("Đăng ký thành công!"),
+      //     actions: [
+      //       TextButton(
+      //         onPressed: () {
+      //           Navigator.of(context).pop();
+      //           accountController.changeReg();
+      //         },
+      //         child: Text("OK"),
+      //       ),
+      //     ],
+      //   ),
+      // );
     } on FirebaseAuthException catch (e) {
       // Xử lý các lỗi có thể xảy ra trong quá trình đăng ký
       String message;
@@ -539,8 +539,24 @@ class _RegisterPageState extends State<RegisterPage> {
                       color: Colors.yellow,
                     ),
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
                         signUp();
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (context) => AlertDialog(
+                        //     title: Text("Success"),
+                        //     content: Text("Đăng ký thành công!"),
+                        //     actions: [
+                        //       TextButton(
+                        //         onPressed: () {
+                        //           Navigator.of(context).pop();
+                        //           accountController.changeReg();
+                        //         },
+                        //         child: Text("OK"),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // );
                       },
                       child: Center(
                         child: Text(

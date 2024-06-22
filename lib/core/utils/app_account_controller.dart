@@ -71,7 +71,7 @@ class AccountController extends GetxController {
 
   void changeReg() {
     checkreg.value = !checkreg.value;
-    print(checkreg.value);
+    print("checkreg: ${checkreg.value}");
   }
 
   Future<void> getAccount(String userEmail) async {

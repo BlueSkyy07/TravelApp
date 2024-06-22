@@ -10,6 +10,7 @@ import 'package:exam/pages/detail_place_page.dart';
 import 'package:exam/pages/favorite_page.dart';
 import 'package:exam/pages/login.dart';
 import 'package:exam/pages/place_page.dart';
+import 'package:exam/pages/profileuser_page.dart';
 import 'package:exam/pages/search_page.dart';
 import 'package:exam/pages/test.dart';
 import 'package:exam/pages/testlich.dart';
@@ -391,18 +392,19 @@ class DashboardController extends FullLifeCycleController
       FavoritePage(),
       Obx(
         () => account.checklogin.value == true
-            ? Container(
-                height: 100,
-                width: 100,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    account.checklogin.value = false;
-                    print("${account.checklogin.value}");
-                  },
-                  child: Text("log out"),
-                ),
-              )
+            ? ProfileUser()
+            // ? Container(
+            //     height: 100,
+            //     width: 100,
+            //     child: ElevatedButton(
+            //       onPressed: () async {
+            //         await FirebaseAuth.instance.signOut();
+            //         account.checklogin.value = false;
+            //         print("${account.checklogin.value}");
+            //       },
+            //       child: Text("log out"),
+            //     ),
+            //   )
             : LoginPage(),
       ),
 

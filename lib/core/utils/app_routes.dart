@@ -30,5 +30,4 @@ abstract class AppPages {
       transitionDuration: Duration(milliseconds: 100),
     ),
   ];
-
 }
