@@ -1,4 +1,5 @@
 import 'package:exam/core/utils/app_account_controller.dart';
+import 'package:exam/pages/detail_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class ProfileUser extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
+                  Get.to(DetailprofilePage());
                   print('object');
                 },
                 child: Container(

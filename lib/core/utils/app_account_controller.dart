@@ -21,6 +21,9 @@ class AccountController extends GetxController {
   RxString sex = ''.obs;
   RxString phonenumber = ''.obs;
   RxBool checkreg = false.obs;
+  RxBool checkEditInf = false.obs;
+  RxBool checkEditSec = false.obs;
+
   var schedule = <Schedule>[].obs;
   var favorite = <String>[].obs;
   // var schedule = Schedule(
@@ -30,7 +33,6 @@ class AccountController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
     getAccounts();
   }
 
@@ -69,6 +71,15 @@ class AccountController extends GetxController {
     print(checklogin.value);
   }
 
+  void ChangeInf() {
+    checkEditInf.value = !checkEditInf.value;
+    // print(checklogin.value);
+  }
+
+  // }void ChangeLogin() {
+  //   checklogin.value = true;
+  //   print(checklogin.value);
+  // }
   void changeReg() {
     checkreg.value = !checkreg.value;
     print("checkreg: ${checkreg.value}");
