@@ -11,6 +11,8 @@ class DetailprofilePage extends StatelessWidget {
   final _genderController = TextEditingController();
   final _phonenumberController = TextEditingController();
 
+  final List<String> genders = ['Male', 'Female', 'Other'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,13 +46,13 @@ class DetailprofilePage extends StatelessWidget {
                                 : TextButton(
                                     onPressed: () async {
                                       accountController.ChangeInf();
-                                      // Update the fullname, gender, and phonenumber in the controller with the values from the text fields
-                                      accountController.username.value =
-                                          _fullnameController.text;
-                                      accountController.sex.value =
-                                          _genderController.text;
-                                      accountController.phonenumber.value =
-                                          _phonenumberController.text;
+                                      // // Update the fullname, gender, and phonenumber in the controller with the values from the text fields
+                                      // accountController.username.value =
+                                      //     _fullnameController.text;
+                                      // accountController.sex.value =
+                                      //     _genderController.text;
+                                      // accountController.phonenumber.value =
+                                      //     _phonenumberController.text;
                                       print(
                                           '${accountController.checkEditInf}');
                                     },
@@ -67,18 +69,20 @@ class DetailprofilePage extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Full name'),
+                            Text('Full Name'),
                             accountController.checkEditInf.value == false
                                 ? Text('${accountController.username}')
                                 : Container(
-                                    width:
-                                        200, // You can adjust the width as per your layout requirements
+                                    width: 300,
                                     child: TextField(
+                                      textAlign: TextAlign.right,
+                                      autofocus: true,
                                       controller: _fullnameController
                                         ..text =
                                             accountController.username.value,
                                       decoration: InputDecoration(
-                                        hintText: 'Enter full name',
+                                        border: UnderlineInputBorder(),
+                                        hintText: 'Enter username',
                                       ),
                                     ),
                                   ),
@@ -98,11 +102,13 @@ class DetailprofilePage extends StatelessWidget {
                             accountController.checkEditInf.value == false
                                 ? Text('${accountController.sex}')
                                 : Container(
-                                    width: 200,
+                                    width: 300,
                                     child: TextField(
+                                      textAlign: TextAlign.right,
                                       controller: _genderController
                                         ..text = accountController.sex.value,
                                       decoration: InputDecoration(
+                                        border: UnderlineInputBorder(),
                                         hintText: 'Enter gender',
                                       ),
                                     ),
@@ -123,12 +129,14 @@ class DetailprofilePage extends StatelessWidget {
                             accountController.checkEditInf.value == false
                                 ? Text('${accountController.phonenumber}')
                                 : Container(
-                                    width: 200,
+                                    width: 300,
                                     child: TextField(
+                                      textAlign: TextAlign.right,
                                       controller: _phonenumberController
                                         ..text =
                                             accountController.phonenumber.value,
                                       decoration: InputDecoration(
+                                        border: UnderlineInputBorder(),
                                         hintText: 'Enter phone number',
                                       ),
                                     ),

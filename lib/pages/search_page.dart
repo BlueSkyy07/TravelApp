@@ -20,7 +20,7 @@ class _SearchPageState extends State<SearchPage> {
   final AccountController accountController = Get.put(AccountController());
   final TextEditingController searchController = TextEditingController();
   bool showResults = false;
-  bool checkLogin = true;
+  // bool checkLogin = true;
 
   final String assetName = 'assets/images/location.svg';
 
@@ -40,6 +40,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    // accountController.getAccount('${accountController.email}');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -114,7 +115,7 @@ class _SearchPageState extends State<SearchPage> {
                     }),
                   )
                 : Spacer(), // Spacer pushes the favorites section to the bottom
-            if (!showResults && checkLogin)
+            if (!showResults && accountController.checklogin == true)
               Obx(() {
                 final favoritePosts = locationController.posts.where((post) {
                   return accountController.isFavorite(post.id!);
@@ -166,140 +167,6 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                 );
               })
-            // Column(
-            //   children: [
-            //     Padding(
-            //       padding: const EdgeInsets.symmetric(vertical: 16),
-            //       child: Container(
-            //         child: Row(
-            //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //           children: [
-            //             Text(
-            //               'Favorite Place',
-            //               style: TextStyle(
-            //                   fontSize: 20, fontWeight: FontWeight.bold),
-            //             ),
-            //             Text('Explore',
-            //                 style: TextStyle(color: kBgGuildItemColor)),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //     Container(
-            //       height: 230,
-            //       child: ListView.builder(
-            //         scrollDirection: Axis.horizontal,
-            //         itemCount: 10,
-            //         itemBuilder: (context, index) {
-            //           return Padding(
-            //             padding: const EdgeInsets.all(8.0),
-            //             child: Container(
-            //               height: 230,
-            //               width: 150,
-            //               decoration: BoxDecoration(
-            //                 image: DecorationImage(
-            //                   image: NetworkImage(
-            //                     'https://i0.wp.com/media.techcity.cloud/vietnam.vn/2023/10/Vinh-Ha-Long-1-3.jpg?fit=1280%2C853&ssl=1',
-            //                   ),
-            //                   fit: BoxFit.cover,
-            //                 ),
-            //                 borderRadius: BorderRadius.all(
-            //                   Radius.circular(24),
-            //                 ),
-            //               ),
-            //               child: Padding(
-            //                 padding: const EdgeInsets.all(8.0),
-            //                 child: Container(
-            //                   child: Column(
-            //                     mainAxisAlignment:
-            //                         MainAxisAlignment.spaceBetween,
-            //                     crossAxisAlignment: CrossAxisAlignment.end,
-            //                     children: [
-            //                       InkWell(
-            //                         onTap: () {},
-            //                         child: Container(
-            //                           height: 30,
-            //                           width: 30,
-            //                           decoration: BoxDecoration(
-            //                             borderRadius: BorderRadius.all(
-            //                               Radius.circular(50),
-            //                             ),
-            //                             color: Colors.white,
-            //                           ),
-            //                           child: Icon(
-            //                             Icons.favorite,
-            //                             color: Colors.red,
-            //                           ),
-            //                         ),
-            //                       ),
-            //                       Container(
-            //                         child: Column(
-            //                           mainAxisAlignment:
-            //                               MainAxisAlignment.end,
-            //                           crossAxisAlignment:
-            //                               CrossAxisAlignment.start,
-            //                           children: [
-            //                             Text(
-            //                               'Dai noi',
-            //                               style: TextStyle(
-            //                                   fontSize: 20,
-            //                                   color: Colors.white,
-            //                                   fontWeight: FontWeight.bold),
-            //                             ),
-            //                             Container(
-            //                               child: Row(
-            //                                 children: [
-            //                                   Container(
-            //                                     height: 15,
-            //                                     child: SvgPicture.asset(
-            //                                         assetName),
-            //                                   ),
-            //                                   Text(
-            //                                     'Hue, VietNam',
-            //                                     style: TextStyle(
-            //                                         fontSize: 15,
-            //                                         color: Colors.white),
-            //                                   ),
-            //                                 ],
-            //                               ),
-            //                             ),
-            //                             Container(
-            //                               child: Row(
-            //                                 children: [
-            //                                   RatingBarIndicator(
-            //                                     direction: Axis.horizontal,
-            //                                     itemCount: 5,
-            //                                     itemSize: 18,
-            //                                     rating: 5,
-            //                                     itemBuilder:
-            //                                         (context, index) => Icon(
-            //                                       Icons.star_outlined,
-            //                                       color: Colors.amber,
-            //                                     ),
-            //                                   ),
-            //                                   Container(
-            //                                     child: Text('5',
-            //                                         style: TextStyle(
-            //                                             fontSize: 18,
-            //                                             color: Colors.white)),
-            //                                   ),
-            //                                 ],
-            //                               ),
-            //                             ),
-            //                           ],
-            //                         ),
-            //                       ),
-            //                     ],
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           );
-            //         },
-            //       ),
-            //     ),
-            //   ],
-            // ),
           ],
         ),
       ),

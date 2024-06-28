@@ -8,6 +8,7 @@ import 'package:exam/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart'; // Import package này để định dạng và phân tích ngày
 
 class TestLich extends StatefulWidget {
   TestLich({super.key});
@@ -19,41 +20,60 @@ class TestLich extends StatefulWidget {
 class _TestLichState extends State<TestLich> {
   final AccountController accountController = Get.put(AccountController());
   final LocationController locationController = Get.put(LocationController());
+
   @override
-  void onInit() async {
+  void initState() {
+    super.initState();
     accountController.getAccount(accountController.email.value);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Schedule",
-            style: TextStyle(fontSize: 30),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Get.to(SearchPage());
-          },
-          child: Icon(Icons.add),
-        ),
-        body: Obx(() => accountController.checklogin.value == true
-            ? SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Obx(() {
-                  // accountController.getAccount(accountController.email.value);
-                  return Column(
-                    children: [
-                      ...accountController.schedule.map((schedule) {
-                        final schedulePosts =
-                            locationController.getPostsBySchedule([schedule]);
+    DateTime now = DateTime.now();
 
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Schedule",
+          style: TextStyle(fontSize: 30),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(SearchPage());
+        },
+        child: Icon(Icons.add),
+      ),
+      body: Obx(() => accountController.checklogin.value == true
+          ? SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Obx(() {
+                // accountController.getAccount(accountController.email.value);
+                return Column(
+                  children: [
+                    ...accountController.schedule.map((schedule) {
+                      final schedulePosts =
+                          locationController.getPostsBySchedule([schedule]);
+                      // Chuyển đổi chuỗi ngày từ JSON thành DateTime
+                      DateTime scheduleDate = DateFormat('dd-MM-yyyy')
+                          .parse('${schedule.datetime}');
+                      int message = 0;
+                      if (now.year == scheduleDate.year &&
+                          now.month == scheduleDate.month &&
+                          now.day == scheduleDate.day) {
+                        message = 1;
+                      } else if (now.isAfter(scheduleDate)) {
+                        message = 0;
+                      } else {
+                        message = 2;
+                      }
+                      if (message == 1 || message == 2) {
                         return Container(
                           margin: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.black12),
+                            border: message == 2
+                                ? Border.all(width: 1, color: Colors.black12)
+                                : Border.all(width: 2, color: Colors.red),
                             borderRadius: BorderRadius.all(Radius.circular(24)),
                           ),
                           width: double.infinity,
@@ -69,7 +89,13 @@ class _TestLichState extends State<TestLich> {
                                   color: lich,
                                 ),
                                 child: Center(
-                                    child: Text("Date: ${schedule.datetime}")),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Date: ${schedule.datetime}"),
+                                    ],
+                                  ),
+                                ),
                               ),
                               Column(children: [
                                 ListView.builder(
@@ -92,14 +118,17 @@ class _TestLichState extends State<TestLich> {
                             ],
                           ),
                         );
-                      }).toList(),
-                    ],
-                  );
-                }),
-              )
-            : Center(
-                child: Text("Please log in to continue this function"),
-              )));
+                      }
+                      return Container();
+                    }).toList(),
+                  ],
+                );
+              }),
+            )
+          : Center(
+              child: Text("Please log in to continue this function"),
+            )),
+    );
   }
 }
 

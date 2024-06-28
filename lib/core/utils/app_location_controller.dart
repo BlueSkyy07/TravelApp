@@ -69,6 +69,6 @@ class LocationController extends GetxController {
       final lowerQuery = category.toLowerCase();
       return (location.location?.toLowerCase().contains(lowerQuery) ?? false);
     }).toList();
-    // print(searchResults);
+    print(categoryResults);
   }
 }

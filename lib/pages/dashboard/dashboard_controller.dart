@@ -23,6 +23,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import '../../core/utils/app_connection_controller.dart';
 import '../../core/utils/app_controller.dart';
 import '../../data/services/app_setting.dart';
@@ -35,17 +36,20 @@ class DashboardController extends FullLifeCycleController
   final appController = Get.find<AppController>();
   final LocationController location = Get.put(LocationController());
   final AccountController account = Get.put(AccountController());
-
+  bool showCategoryResult = false;
   final tabIndex = 0.obs;
   late List<Widget> pages = [];
   late PageController pageController;
   late TabController tabController;
   final String assetName = 'assets/images/location.svg';
   // bool checkLogin = true;
-
+  DateTime now = DateTime.now();
   // Danh sách các category
   final List<Map<String, dynamic>> categories = [
-    {'title': 'Category 1', 'image': AppAssets.camping},
+    {
+      'title': 'Category 1',
+      'image': AppAssets.camping,
+    },
     {'title': 'Category 2', 'image': AppAssets.camping},
     {'title': 'Category 3', 'image': AppAssets.camping},
     {'title': 'Category 4', 'image': AppAssets.camping},
@@ -83,7 +87,25 @@ class DashboardController extends FullLifeCycleController
       }
     });
 
-    //
+    // print('ngày hiện tại: ${now.day}');
+    // int message = 0;
+    // account.schedule.map((schedule) {
+    //   final schedulePosts = location.getPostsBySchedule([schedule]);
+    //   // Chuyển đổi chuỗi ngày từ JSON thành DateTime
+    //   DateTime scheduleDate =
+    //       DateFormat('dd-MM-yyyy').parse('${schedule.datetime}');
+
+    //   if (now.year == scheduleDate.year &&
+    //       now.month == scheduleDate.month &&
+    //       now.day == scheduleDate.day) {
+    //     message = 1;
+    //   } else if (now.isAfter(scheduleDate)) {
+    //     message = 0;
+    //   } else {
+    //     message = 2;
+    //   }
+    // }).toList();
+    // //
     pageController =
         PageController(initialPage: tabIndex.value, keepPage: true);
     pages = [
@@ -456,7 +478,7 @@ class DashboardController extends FullLifeCycleController
 class CategoryItem extends StatelessWidget {
   final String title;
   final String image;
-  // late  VoidCallback onTap;
+  late VoidCallback onTap;
   CategoryItem({required this.title, required this.image});
 
   @override
@@ -469,6 +491,7 @@ class CategoryItem extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
+          onTap;
           print('object');
         },
         child: Row(

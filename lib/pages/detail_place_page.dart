@@ -554,13 +554,32 @@ class _MyInformationState extends State<MyInformation>
                         ? ElevatedButton(
                             onPressed: () {
                               //chuyển đến trang login
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Center(
+                                      child: Text(
+                                    "Schedule failed",
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                                  content: Text("Please Login!. Try again."),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context); // Đóng dialog
+                                      },
+                                      child: Text("OK"),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                             child: Text('book'),
                           )
                         : ElevatedButton(
                             onPressed: () async {
-                              await accountController
-                                  .getAccount(accountController.email.value);
                               _showDatePicker(context, location.id!);
                             },
                             child: Text('book'),
