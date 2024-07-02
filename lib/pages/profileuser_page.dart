@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/values/image.dart';
 import 'package:exam/pages/detail_profile_page.dart';
@@ -7,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:uuid/uuid.dart';
 
 class ProfileUser extends StatefulWidget {
   ProfileUser({super.key});
@@ -18,356 +22,371 @@ class ProfileUser extends StatefulWidget {
 class _ProfileUserState extends State<ProfileUser> {
   final AccountController accountController = Get.find<AccountController>();
   Uint8List? _image;
-
+  late firebase_storage.Reference ref;
+  XFile? _selectedFile;
+  String image = '';
+  bool checkChangeImage = false;
   Future<void> SelectImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final imageBytes = await pickedFile.readAsBytes();
+    ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+    if (file == null) {
+      print('No image selected.');
+      return;
+    }
+
+    print('Selected file path: ${file.path}');
+    if (file != null) {
+      final imageBytes = await file.readAsBytes();
       setState(() {
         _image = imageBytes;
+        _selectedFile = file;
       });
+    }
+  }
+
+  Future<void> AddImage() async {
+    String uniqueFileName = DateTime.now().microsecondsSinceEpoch.toString();
+    ref = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('imageUser')
+        .child(uniqueFileName);
+
+    try {
+      await ref.putFile(File(_selectedFile!.path));
+      image = await ref.getDownloadURL();
+      await accountController.updateImageUser(
+          accountController.id.value, image);
+      await accountController.getAccount(accountController.email.value);
+      print('File uploaded successfully');
+    } catch (e) {
+      print('Error uploading file: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Profile",
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          title: Text(
+            "Profile",
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                        'https://static.wikia.nocookie.net/naruto/images/b/bb/Itachi.png/revision/latest/scale-to-width-down/300?cb=20220214112531'),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    "${accountController.username}",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                Container(
-                  height: 100,
-                  width: 100,
-                  child: Stack(
-                    children: [
-                      _image != null
-                          ? Container(
-                              height: 100,
-                              width: 100,
-                              child: CircleAvatar(
-                                radius: 50,
-                                child: ClipOval(
-                                  clipBehavior: Clip
-                                      .hardEdge, // Đây là phần đã thêm để bo tròn
-                                  child: Image.memory(
-                                    _image!,
-                                    fit: BoxFit.cover,
+        body: Obx(
+          () => SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      width: 100,
+                      child: Stack(
+                        children: [
+                          (accountController.imageUser.value == '' &&
+                                  _image == null)
+                              ? Container(
+                                  height: 200,
+                                  width: double.infinity,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: CircleAvatar(
+                                      radius: 50,
+                                      backgroundImage:
+                                          AssetImage(AppAssets.imageUser),
+                                    ),
                                   ),
-                                ),
+                                )
+                              : _image != null
+                                  ? Container(
+                                      child: CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage:
+                                              MemoryImage(_image!)),
+                                    )
+                                  : Container(
+                                      child: CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage: NetworkImage(
+                                              accountController
+                                                  .imageUser.value)),
+                                    ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              width:
+                                  30, // Đặt kích thước với đường kính mong muốn
+                              height: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white, // Màu nền là màu trắng
                               ),
-                            )
-                          : Container(
-                              height: 200,
-                              width: double.infinity,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage:
-                                      AssetImage(AppAssets.imageUser),
-                                ),
+                              child: InkWell(
+                                onTap: () async {
+                                  await SelectImage();
+                                  if (_selectedFile != null) {
+                                    setState(() {
+                                      checkChangeImage = true;
+                                    });
+                                  }
+                                },
+                                child: Icon(Icons.add_a_photo),
                               ),
                             ),
-                      Positioned(
-                        bottom: 5,
-                        right: 0,
-                        child: InkWell(
-                          onTap: SelectImage,
-                          child: Icon(Icons.add_a_photo),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                InkWell(
-                  onTap: () {
-                    Get.to(DetailprofilePage());
-                    print('object');
-                  },
-                  child: Container(
-                    height: 70,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      // color: Colors.red,
-                      border: Border.all(width: 2, color: Colors.grey),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     offset: Offset(3, 6),
-                      //     color: Colors.black12,
-                      //   )
-                      // ]
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Persional Information',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Icon(Icons.account_circle_outlined)
+                          )
                         ],
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    print('object');
-                  },
-                  child: Container(
-                    height: 70,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      // color: Colors.red,
-                      border: Border.all(width: 2, color: Colors.grey),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     offset: Offset(3, 6),
-                      //     color: Colors.black12,
-                      //   )
-                      // ]
+                    SizedBox(
+                      height: 20,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'FAQ',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Icon(Icons.chat_outlined)
-                        ],
+                    Container(
+                      child: Text(
+                        "${accountController.username}",
+                        style: TextStyle(fontSize: 20, color: Colors.black),
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    print('object');
-                  },
-                  child: Container(
-                    height: 70,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      // color: Colors.red,
-                      border: Border.all(width: 2, color: Colors.grey),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     offset: Offset(3, 6),
-                      //     color: Colors.black12,
-                      //   )
-                      // ]
+                    checkChangeImage == true
+                        ? Container(
+                            child: Column(
+                              children: [
+                                TextButton(
+                                    onPressed: () async {
+                                      await AddImage();
+                                      setState(() {
+                                        checkChangeImage = false;
+                                      });
+                                    },
+                                    child: Text("Save"))
+                              ],
+                            ),
+                          )
+                        : Container(),
+                    SizedBox(
+                      height: 30,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Dark Mode',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Icon(Icons.switch_camera_outlined)
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    print('object');
-                  },
-                  child: Container(
-                    height: 70,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      // color: Colors.red,
-                      border: Border.all(width: 2, color: Colors.grey),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     offset: Offset(3, 6),
-                      //     color: Colors.black12,
-                      //   )
-                      // ]
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Language',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Icon(Icons.language)
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () async {
-                    // await FirebaseAuth.instance.signOut();
-                    // accountController.checklogin.value = false;
-                    // print("${accountController.checklogin.value}");
-                    // Show SnackBar
-                    Get.bottomSheet(
-                      Container(
-                        padding: EdgeInsets.all(16),
+                    InkWell(
+                      onTap: () {
+                        Get.to(DetailprofilePage());
+                        print('object');
+                      },
+                      child: Container(
+                        height: 70,
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(width: 2, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Persional Information',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Icon(Icons.account_circle_outlined)
+                            ],
                           ),
                         ),
-                        height: 200,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Center(
-                              child: Text(
-                                'LOGOUT',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        print('object');
+                      },
+                      child: Container(
+                        height: 70,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(width: 2, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'FAQ',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Icon(Icons.chat_outlined)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        print('object');
+                      },
+                      child: Container(
+                        height: 70,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(width: 2, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Dark Mode',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Icon(Icons.switch_camera_outlined)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        print('object');
+                      },
+                      child: Container(
+                        height: 70,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(width: 2, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Language',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Icon(Icons.language)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        Get.bottomSheet(
+                          Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
                               ),
                             ),
-                            // SizedBox(height: 10),
-                            Text('Are you sure you want to logout?'),
-                            // SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            height: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    Get.back();
-                                  },
-                                  child: Container(
-                                    height: 50,
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                        color: Colors.yellow,
-                                        borderRadius:
-                                            BorderRadius.circular(18)),
-                                    child: Center(child: Text("Cancle")),
+                                Center(
+                                  child: Text(
+                                    'LOGOUT',
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                                InkWell(
-                                  onTap: () async {
-                                    Get.back();
-                                    await FirebaseAuth.instance.signOut();
-                                    accountController.checklogin.value = false;
-
-                                    print(
-                                        "${accountController.checklogin.value}");
-                                  },
-                                  child: Container(
-                                    height: 50,
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius:
-                                            BorderRadius.circular(18)),
-                                    child: Center(child: Text("Logout")),
-                                  ),
+                                Text('Are you sure you want to logout?'),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        Get.back();
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                            color: Colors.yellow,
+                                            borderRadius:
+                                                BorderRadius.circular(18)),
+                                        child: Center(child: Text("Cancel")),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () async {
+                                        Get.back();
+                                        await FirebaseAuth.instance.signOut();
+                                        accountController.checklogin.value =
+                                            false;
+                                        print(
+                                            "${accountController.checklogin.value}");
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius:
+                                                BorderRadius.circular(18)),
+                                        child: Center(child: Text("Logout")),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 70,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(width: 2, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Logout',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Icon(Icons.logout_outlined)
+                            ],
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  child: Container(
-                    height: 70,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      // color: Colors.red,
-                      border: Border.all(width: 2, color: Colors.grey),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     offset: Offset(3, 6),
-                      //     color: Colors.black12,
-                      //   )
-                      // ]
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Logout',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Icon(Icons.logout_outlined)
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

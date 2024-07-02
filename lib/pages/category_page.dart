@@ -33,12 +33,26 @@ class _CategoryPageState extends State<CategoryPage> {
     categories = [
       {
         'category': category,
+        'title': 'All',
+        'image': AppAssets.camping,
+        'ontap': () {
+          setState(() {
+            category = 'All';
+            showResults = true;
+          });
+          locationController.searchLocations(category);
+        }
+      },
+      {
+        'category': category,
         'title': 'Beach',
         'image': AppAssets.camping,
         'ontap': () {
           setState(() {
             category = 'Beach';
+            showResults = true;
           });
+
           locationController.searchLocations(category);
         }
       },
@@ -49,6 +63,7 @@ class _CategoryPageState extends State<CategoryPage> {
         'ontap': () {
           setState(() {
             category = 'Historical Sites';
+            showResults = true;
           });
           locationController.searchLocations(category);
         }
@@ -59,6 +74,7 @@ class _CategoryPageState extends State<CategoryPage> {
         'image': AppAssets.camping,
         'ontap': () {
           setState(() {
+            showResults = true;
             category = 'Nature & Adventure';
           });
           locationController.searchLocations(category);
@@ -72,71 +88,169 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Category',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+        appBar: AppBar(
+          title: Text(
+            'Popular',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Container(
-              height: 54, // Chiều cao của ListView
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  return CategoryItem(
-                    categorie: category,
-                    title: categories[index]['title'],
-                    image: categories[index]['image'],
-                    onTap: categories[index]['ontap'],
-                  );
-                },
-              ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  height: 54, // Chiều cao của ListView
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      return CategoryItem(
+                        categorie: category,
+                        title: categories[index]['title'],
+                        image: categories[index]['image'],
+                        onTap: categories[index]['ontap'],
+                      );
+                    },
+                  ),
+                ),
+                // category == 'All'
+                //     ? Container(
+                //         child: Column(
+                //           children: List.generate(
+                //             locationController.posts.length,
+                //             (index) => buildLocationCardAll(
+                //               index,
+                //               locationController.posts[index].image!,
+                //               locationController.posts[index].title!,
+                //               locationController.posts[index].description!,
+                //               locationController.posts[index].rating?.rate
+                //                       ?.toDouble() ??
+                //                   0.0,
+                //             ),
+                //           ),
+                //         ),
+                //       )
+                showResults
+                    ? Obx(() {
+                        if (locationController.isLoading.value) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (locationController.searchResults.isEmpty &&
+                            category != 'All') {
+                          return Center(
+                              child: Text('Không tìm thấy sản phẩm nào'));
+                        } else {
+                          return category == 'All'
+                              ? Container(
+                                  child: Column(
+                                    children: List.generate(
+                                      locationController.posts.length,
+                                      (index) => buildLocationCardAll(
+                                        index,
+                                        locationController.posts[index].image!,
+                                        locationController.posts[index].title!,
+                                        locationController
+                                            .posts[index].description!,
+                                        locationController
+                                                .posts[index].rating?.rate
+                                                ?.toDouble() ??
+                                            0.0,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount:
+                                      locationController.searchResults.length,
+                                  itemBuilder: (context, index) {
+                                    final location =
+                                        locationController.searchResults[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        print("Bấm vào thử");
+                                        locationController
+                                            .setLocation(location);
+                                        Get.to(MyPlane());
+                                      },
+                                      child: buildLocationCard(
+                                        location,
+                                        location.image!,
+                                        location.title!,
+                                        location.description!,
+                                        location.rating?.rate?.toDouble() ??
+                                            0.0,
+                                      ),
+                                    );
+                                  },
+                                );
+                        }
+                      })
+                    : SizedBox(),
+              ],
             ),
-            showResults
-                ? Expanded(
-                    child: Obx(() {
-                      if (locationController.isLoading.value) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (locationController.searchResults.isEmpty) {
-                        return Center(child: Text('No products found'));
-                      } else {
-                        return ListView.builder(
-                          padding: const EdgeInsets.all(16.0),
-                          itemCount: locationController.searchResults.length,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            final location =
-                                locationController.searchResults[index];
-                            return GestureDetector(
-                              onTap: () {
-                                print("click test");
-                                locationController.setLocation(location);
-                                Get.to(MyPlane());
-                              },
-                              child: buildLocationCard(
-                                location,
-                                location.image!,
-                                location.title!,
-                                location.description!,
-                                location.rating?.rate?.toDouble() ?? 0.0,
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    }),
-                  )
-                : Spacer(), // Spacer pushes the favorites section to the bottom
-          ],
-        ),
-      ),
-      resizeToAvoidBottomInset: false,
-    );
+          ),
+        )
+        // Padding(
+        //   padding: const EdgeInsets.all(16.0),
+        //   child: Column(
+        //     children: [
+        //       Container(
+        //         height: 54, // Chiều cao của ListView
+        //         child: ListView.builder(
+        //           scrollDirection: Axis.horizontal,
+        //           itemCount: categories.length,
+        //           itemBuilder: (context, index) {
+        //             return CategoryItem(
+        //               categorie: category,
+        //               title: categories[index]['title'],
+        //               image: categories[index]['image'],
+        //               onTap: categories[index]['ontap'],
+        //             );
+        //           },
+        //         ),
+        //       ),
+        //       showResults
+        //           ? Expanded(
+        //               child: Obx(() {
+        //                 if (locationController.isLoading.value) {
+        //                   return Center(child: CircularProgressIndicator());
+        //                 } else if (locationController.searchResults.isEmpty) {
+        //                   return Center(child: Text('No products found'));
+        //                 } else {
+        //                   return ListView.builder(
+        //                     padding: const EdgeInsets.all(16.0),
+        //                     itemCount: locationController.searchResults.length,
+        //                     scrollDirection: Axis.vertical,
+        //                     itemBuilder: (context, index) {
+        //                       final location =
+        //                           locationController.searchResults[index];
+        //                       return GestureDetector(
+        //                         onTap: () {
+        //                           print("click test");
+        //                           locationController.setLocation(location);
+        //                           Get.to(MyPlane());
+        //                         },
+        //                         child: buildLocationCard(
+        //                           location,
+        //                           location.image!,
+        //                           location.title!,
+        //                           location.description!,
+        //                           location.rating?.rate?.toDouble() ?? 0.0,
+        //                         ),
+        //                       );
+        //                     },
+        //                   );
+        //                 }
+        //               }),
+        //             )
+        //           : Spacer(),
+        //     ],
+        //   ),
+        // ),
+        // resizeToAvoidBottomInset: false,
+        );
   }
 }
 
@@ -150,8 +264,13 @@ Widget buildLocationCard(
   }
 
   return Container(
-    margin: const EdgeInsets.symmetric(vertical: 8),
-    height: 120,
+    // margin: const EdgeInsets.symmetric(vertical: 8),
+    padding: EdgeInsets.symmetric(horizontal: 12),
+    decoration: BoxDecoration(
+        border: Border.all(width: 1, color: Colors.black12),
+        borderRadius: BorderRadius.all(Radius.circular(24))),
+    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+    height: 160,
     child: Row(
       children: [
         Container(
@@ -162,12 +281,12 @@ Widget buildLocationCard(
             ),
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
-          height: 120,
+          height: 140,
           width: 100,
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(left: 8),
+            padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -272,4 +391,105 @@ class CategoryItem extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget buildLocationCardAll(
+    int index, String image, String title, String description, double rate) {
+  final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+  bool isFav() {
+    String userID = locationController.posts[index].id!;
+    return accountController.isFavorite(userID);
+  }
+
+  return InkWell(
+    onTap: () {
+      Get.find<LocationController>()
+          .setLocation(locationController.posts[index]);
+      Get.to(MyPlane());
+    },
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+          border: Border.all(width: 1, color: Colors.black12),
+          borderRadius: BorderRadius.all(Radius.circular(24))),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      height: 160,
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(image),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+            ),
+            height: 140,
+            width: 100,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Obx(() => accountController.checklogin == false
+                              ? Icon(Icons.favorite_border)
+                              : isFav() == true
+                                  ? Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    )
+                                  : Icon(Icons.favorite_border))
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          RatingBarIndicator(
+                            itemCount: 5,
+                            itemSize: 20,
+                            rating: rate,
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            '$rate',
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Text(
+                    description,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

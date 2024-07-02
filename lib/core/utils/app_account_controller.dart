@@ -21,6 +21,7 @@ class AccountController extends GetxController {
   RxString sex = ''.obs;
   RxString phonenumber = ''.obs;
   RxBool checkreg = false.obs;
+  RxString imageUser = ''.obs;
 
   var schedule = <Schedule>[].obs;
   var favorite = <String>[].obs;
@@ -87,6 +88,7 @@ class AccountController extends GetxController {
       print("Id: ${id}");
       print("Favorite: ${favorite}");
       print("Schedule: ${schedule}");
+      print("ImageUser: ${imageUser}");
     } catch (e) {
       print('Error fetching Accounts: $e');
     } finally {
@@ -135,11 +137,11 @@ class AccountController extends GetxController {
   }
 
   Future<void> CreateUser(String fullname, String password, String email,
-      String phonenumber, String sex) async {
+      String phonenumber, String sex, String imageUser) async {
     isLoading.value = true;
     try {
       await dataServices()
-          .CreateUser(fullname, email, password, phonenumber, sex);
+          .CreateUser(fullname, email, password, phonenumber, sex, imageUser);
 
       print("Schedule create successfully");
     } catch (e) {
@@ -177,6 +179,18 @@ class AccountController extends GetxController {
     }
   }
 
+  Future<void> updateImageUser(String id, String imageUser) async {
+    isLoading.value = true;
+    try {
+      await dataServices().updateImageUser(id, imageUser);
+      // await getPosts(); // Fetch the updated list of postsz
+      print("ImageUser updated successfully");
+    } catch (e) {
+      print('Error updating title: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
   // Future<void> fetchUserById(String userId) async {
   //   try {
   //     final response = await http

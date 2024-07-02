@@ -76,6 +76,7 @@ class dataServices {
         accountController.favorite.value = user.favorite ?? [];
         accountController.schedule.value = user.schedule ?? [];
         accountController.email.value = user.email!;
+        accountController.imageUser.value = user.imageUser!;
       } else {
         print("Failed to load users");
       }
@@ -318,7 +319,7 @@ class dataServices {
   }
 
   Future<void> CreateUser(String fullname, String password, String email,
-      String phonenumber, String sex) async {
+      String phonenumber, String sex, String imageUser) async {
     var response = await http.post(
       Uri.parse(AccountUrl),
       headers: <String, String>{
@@ -330,6 +331,7 @@ class dataServices {
         'password': password,
         'phonenumber': phonenumber,
         'sex': sex,
+        'imageUser': imageUser
       }),
     );
 
@@ -359,6 +361,27 @@ class dataServices {
 
     if (response.statusCode == 200) {
       print('Update successful');
+      return;
+    } else {
+      print('Failed to update post: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to update post");
+    }
+  }
+
+  Future<void> updateImageUser(String id, String imageUser) async {
+    var response = await http.put(
+      Uri.parse(AccountUrl + "/" + id),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'imageUser': imageUser,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Update Image successful');
       return;
     } else {
       print('Failed to update post: ${response.statusCode}');

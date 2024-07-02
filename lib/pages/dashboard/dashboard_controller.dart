@@ -150,13 +150,19 @@ class DashboardController extends FullLifeCycleController
                             children: [
                               Row(
                                 children: [
-                                  Container(
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: NetworkImage(
-                                          'https://static.wikia.nocookie.net/naruto/images/b/bb/Itachi.png/revision/latest/scale-to-width-down/300?cb=20220214112531'),
-                                    ),
-                                  ),
+                                  account.imageUser.value == ''
+                                      ? Container(
+                                          child: CircleAvatar(
+                                              radius: 20,
+                                              backgroundImage: AssetImage(
+                                                  AppAssets.imageUser)),
+                                        )
+                                      : Container(
+                                          child: CircleAvatar(
+                                              radius: 20,
+                                              backgroundImage: NetworkImage(
+                                                  account.imageUser.value)),
+                                        ),
                                   SizedBox(
                                     width: 10,
                                   ),
@@ -341,6 +347,8 @@ class DashboardController extends FullLifeCycleController
                         ),
                         InkWell(
                           onTap: () {
+                            Get.to(CategoryPage(category: 'All'));
+
                             print(location.posts.length);
                             // Get.to(TestPage());
                             // Get.to(FavoritePage());
@@ -370,91 +378,14 @@ class DashboardController extends FullLifeCycleController
           ),
         ),
       ),
-      Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  Get.to(UserScreen());
-                },
-                child: Text('Get user')),
-            ElevatedButton(
-                onPressed: () {
-                  account.addToFavorites('2', '2');
-                },
-                child: Text('add favorite')),
-            ElevatedButton(
-                onPressed: () {
-                  account.removeFromFavorites('2', '2');
-                },
-                child: Text('remove favorite')),
-            ElevatedButton(
-                onPressed: () {
-                  account.addToSchedule('2', '13-08-2024', '2');
-                },
-                child: Text('add schedule')),
-            ElevatedButton(
-                onPressed: () {
-                  bool check = account.isIdInSchedule('3', "12-6-2024");
-                  // account.isIdInSchedule('2');
-                  print(check);
-                },
-                child: Text('check id schedule')),
-            ElevatedButton(
-                onPressed: () {
-                  account.removeFromSchedule('1', "12-6-2024", "4");
-                  // account.isIdInSchedule('2');
-                  print('check remove');
-                },
-                child: Text('remove schedule')),
-            ElevatedButton(
-                onPressed: () {
-                  account.CreateUser('123', '123', '123', '123', '123');
-                },
-                child: Text('CreateUsers 123')),
-            ElevatedButton(
-                onPressed: () {
-                  Get.to(FavoritePage());
-                },
-                child: Text('favorite')),
-            ElevatedButton(
-                onPressed: () {
-                  location.categoryLocations("beach");
-                  // print("category: ${location.categoryLocations("beach")}");
-                  print("categoryResult: ${location.categoryResults}");
-                },
-                child: Text('getCategory')),
-          ],
-        ),
-        // color: Colors.red,
-      ),
-      // SingleChildScrollView(
-      //     child: ElevatedButton(
-      //   onPressed: () {
-      //     Get.to(TestLich());
-      //   },
-      //   child: Text('data'),
-      // )),
+
+      CategoryPage(category: 'All'),
+
       TestLich(),
 
       FavoritePage(),
       Obx(
-        () => account.checklogin.value == true
-            ? ProfileUser()
-            // ? Container(
-            //     height: 100,
-            //     width: 100,
-            //     child: ElevatedButton(
-            //       onPressed: () async {
-            //         await FirebaseAuth.instance.signOut();
-            //         account.checklogin.value = false;
-            //         print("${account.checklogin.value}");
-            //       },
-            //       child: Text("log out"),
-            //     ),
-            //   )
-            : LoginPage(),
+        () => account.checklogin.value == true ? ProfileUser() : LoginPage(),
       ),
 
       // Container(
