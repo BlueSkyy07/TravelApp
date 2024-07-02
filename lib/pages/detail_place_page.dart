@@ -42,6 +42,7 @@ class _MyInformationState extends State<MyInformation>
   @override
   void initState() {
     super.initState();
+
     _controller =
         AnimationController(duration: Duration(milliseconds: 500), vsync: this);
 
@@ -127,8 +128,8 @@ class _MyInformationState extends State<MyInformation>
                                             .removeFromFavorites(
                                                 "${accountController.id}",
                                                 location.id!);
-                                        await accountController
-                                            .getAccount('minhthai123');
+                                        await accountController.getAccount(
+                                            accountController.email.value);
                                       },
                                       icon: Icon(
                                         Icons.favorite,
@@ -139,8 +140,8 @@ class _MyInformationState extends State<MyInformation>
                                         await accountController.addToFavorites(
                                             "${accountController.id}",
                                             location.id!);
-                                        await accountController
-                                            .getAccount('minhthai123');
+                                        await accountController.getAccount(
+                                            accountController.email.value);
                                         print(isFav(location.id!));
                                       },
                                       icon: Icon(

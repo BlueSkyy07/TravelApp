@@ -1,33 +1,20 @@
-import 'package:exam/core/model/account.dart';
 import 'package:exam/core/model/post.dart';
 import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/values/colors.dart';
-import 'package:exam/pages/historySchedule_page.dart';
 import 'package:exam/pages/place_page.dart';
 import 'package:exam/pages/search_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; // Import package này để định dạng và phân tích ngày
+import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 
-class TestLich extends StatefulWidget {
-  TestLich({super.key});
-
-  @override
-  State<TestLich> createState() => _TestLichState();
-}
-
-class _TestLichState extends State<TestLich> {
-  final AccountController accountController = Get.put(AccountController());
+class HistoryschedulePage extends StatelessWidget {
+  HistoryschedulePage({super.key});
   final LocationController locationController = Get.put(LocationController());
-
-  @override
-  void initState() {
-    super.initState();
-    accountController.getAccount(accountController.email.value);
-  }
-
+  final AccountController accountController = Get.put(AccountController());
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
@@ -35,17 +22,9 @@ class _TestLichState extends State<TestLich> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Schedule",
+          "History Schedule",
           style: TextStyle(fontSize: 30),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_alert),
-            onPressed: () {
-              Get.to(HistoryschedulePage());
-            },
-          ),
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -76,13 +55,11 @@ class _TestLichState extends State<TestLich> {
                       } else {
                         message = 2;
                       }
-                      if (message == 1 || message == 2) {
+                      if (message == 0) {
                         return Container(
                           margin: EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            border: message == 2
-                                ? Border.all(width: 1, color: Colors.black12)
-                                : Border.all(width: 2, color: Colors.red),
+                            border: Border.all(width: 1, color: Colors.black12),
                             borderRadius: BorderRadius.all(Radius.circular(24)),
                           ),
                           width: double.infinity,

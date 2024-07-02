@@ -25,11 +25,11 @@ Future<void> main() async {
   Platform.isAndroid
       ? await Firebase.initializeApp(
           options: FirebaseOptions(
-          apiKey: "AIzaSyB7yp0Te3VfPYDl-9sYyw-6PO_OiTp9TTA",
-          appId: "1:145799333330:android:0f787405d262f07339b40b",
-          messagingSenderId: "145799333330",
-          projectId: "travelapp-cbdd5",
-        ))
+              apiKey: "AIzaSyB7yp0Te3VfPYDl-9sYyw-6PO_OiTp9TTA",
+              appId: "1:145799333330:android:0f787405d262f07339b40b",
+              messagingSenderId: "145799333330",
+              projectId: "travelapp-cbdd5",
+              storageBucket: "gs://travelapp-cbdd5.appspot.com"))
       : await Firebase.initializeApp();
   await initService();
   runApp(MyApp());

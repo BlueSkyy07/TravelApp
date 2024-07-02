@@ -342,4 +342,28 @@ class dataServices {
       throw Exception("Failed to create Account");
     }
   }
+
+  Future<void> UpdateUser(
+      String id, String username, String sex, String phonenumber) async {
+    var response = await http.put(
+      Uri.parse(AccountUrl + "/" + id),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'sex': sex,
+        'phonenumber': phonenumber,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Update successful');
+      return;
+    } else {
+      print('Failed to update post: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception("Failed to update post");
+    }
+  }
 }

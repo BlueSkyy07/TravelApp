@@ -1,0 +1,275 @@
+import 'package:exam/core/model/post.dart';
+import 'package:exam/core/utils/app_account_controller.dart';
+import 'package:exam/core/utils/app_location_controller.dart';
+import 'package:exam/core/values/colors.dart';
+import 'package:exam/core/values/image.dart';
+import 'package:exam/pages/place_page.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
+
+class CategoryPage extends StatefulWidget {
+  String category;
+  CategoryPage({required this.category});
+
+  @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
+  final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+
+  late String category;
+
+  // bool showResults = false;
+  late final List<Map<String, dynamic>> categories;
+
+  @override
+  void initState() {
+    super.initState();
+    category = widget.category; // Initialize the category variable
+    categories = [
+      {
+        'category': category,
+        'title': 'Beach',
+        'image': AppAssets.camping,
+        'ontap': () {
+          setState(() {
+            category = 'Beach';
+          });
+          locationController.searchLocations(category);
+        }
+      },
+      {
+        'category': category,
+        'title': 'Historical Sites',
+        'image': AppAssets.camping,
+        'ontap': () {
+          setState(() {
+            category = 'Historical Sites';
+          });
+          locationController.searchLocations(category);
+        }
+      },
+      {
+        'category': category,
+        'title': 'Nature & Adventure',
+        'image': AppAssets.camping,
+        'ontap': () {
+          setState(() {
+            category = 'Nature & Adventure';
+          });
+          locationController.searchLocations(category);
+        }
+      },
+    ];
+    locationController.searchLocations(category);
+  }
+
+  bool showResults = true;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Category',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Container(
+              height: 54, // Chiều cao của ListView
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  return CategoryItem(
+                    categorie: category,
+                    title: categories[index]['title'],
+                    image: categories[index]['image'],
+                    onTap: categories[index]['ontap'],
+                  );
+                },
+              ),
+            ),
+            showResults
+                ? Expanded(
+                    child: Obx(() {
+                      if (locationController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (locationController.searchResults.isEmpty) {
+                        return Center(child: Text('No products found'));
+                      } else {
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(16.0),
+                          itemCount: locationController.searchResults.length,
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            final location =
+                                locationController.searchResults[index];
+                            return GestureDetector(
+                              onTap: () {
+                                print("click test");
+                                locationController.setLocation(location);
+                                Get.to(MyPlane());
+                              },
+                              child: buildLocationCard(
+                                location,
+                                location.image!,
+                                location.title!,
+                                location.description!,
+                                location.rating?.rate?.toDouble() ?? 0.0,
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    }),
+                  )
+                : Spacer(), // Spacer pushes the favorites section to the bottom
+          ],
+        ),
+      ),
+      resizeToAvoidBottomInset: false,
+    );
+  }
+}
+
+Widget buildLocationCard(
+    Post post, String image, String title, String description, double rate) {
+  final LocationController locationController = Get.put(LocationController());
+  final AccountController accountController = Get.put(AccountController());
+  bool isFav() {
+    String userID = post.id!;
+    return accountController.isFavorite(userID);
+  }
+
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    height: 120,
+    child: Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(image),
+              fit: BoxFit.cover,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+          ),
+          height: 120,
+          width: 100,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Obx(() => accountController.checklogin == false
+                            ? Icon(Icons.favorite_border)
+                            : isFav() == true
+                                ? Icon(
+                                    Icons.favorite,
+                                    color: Colors.red,
+                                  )
+                                : Icon(Icons.favorite_border))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        RatingBarIndicator(
+                          itemCount: 5,
+                          itemSize: 20,
+                          rating: rate,
+                          itemBuilder: (context, index) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          '$rate',
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Text(
+                  description,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class CategoryItem extends StatelessWidget {
+  final String categorie;
+  final String title;
+  final String image;
+  final VoidCallback? onTap;
+  CategoryItem(
+      {required this.categorie,
+      required this.title,
+      required this.image,
+      required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        border: categorie.trim().toLowerCase() == title.trim().toLowerCase()
+            ? Border.all(width: 1, color: Colors.green)
+            : Border.all(width: 1, color: fsearch),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: InkWell(
+        onTap: () {
+          if (onTap != null) {
+            onTap!();
+          }
+        },
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            Image.asset(image),
+          ],
+        ),
+      ),
+    );
+  }
+}

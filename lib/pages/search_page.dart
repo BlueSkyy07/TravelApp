@@ -4,6 +4,7 @@ import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/values/colors.dart';
 import 'package:exam/pages/dashboard/dashboard_controller.dart';
+import 'package:exam/pages/favorite_page.dart';
 import 'package:exam/pages/place_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -133,8 +134,13 @@ class _SearchPageState extends State<SearchPage> {
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            Text('Explore',
-                                style: TextStyle(color: kBgGuildItemColor))
+                            InkWell(
+                              onTap: () {
+                                Get.to(FavoritePage());
+                              },
+                              child: Text('Explore',
+                                  style: TextStyle(color: kBgGuildItemColor)),
+                            )
                           ],
                         ),
                       ),

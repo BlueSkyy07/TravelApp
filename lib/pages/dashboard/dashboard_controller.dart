@@ -6,6 +6,7 @@ import 'package:exam/core/utils/app_account_controller.dart';
 import 'package:exam/core/utils/app_location_controller.dart';
 import 'package:exam/core/utils/app_utility.dart';
 import 'package:exam/core/values/image.dart';
+import 'package:exam/pages/category_page.dart';
 import 'package:exam/pages/detail_place_page.dart';
 import 'package:exam/pages/favorite_page.dart';
 import 'package:exam/pages/login.dart';
@@ -44,16 +45,61 @@ class DashboardController extends FullLifeCycleController
   final String assetName = 'assets/images/location.svg';
   // bool checkLogin = true;
   DateTime now = DateTime.now();
+
+  void forwardCategory() {
+    Get.to(() => CategoryPage(
+          category: 'beach',
+        ));
+  }
+
   // Danh sách các category
+
   final List<Map<String, dynamic>> categories = [
     {
-      'title': 'Category 1',
+      'title': 'Beach',
       'image': AppAssets.camping,
+      'ontap': () {
+        Get.to(CategoryPage(
+          category: 'Beach',
+        ));
+      }
     },
-    {'title': 'Category 2', 'image': AppAssets.camping},
-    {'title': 'Category 3', 'image': AppAssets.camping},
-    {'title': 'Category 4', 'image': AppAssets.camping},
-    {'title': 'Category 5', 'image': AppAssets.camping},
+    {
+      'title': 'Historical Sites',
+      'image': AppAssets.camping,
+      'ontap': () {
+        Get.to(CategoryPage(
+          category: 'Historical Sites',
+        ));
+      }
+    },
+    {
+      'title': 'Nature & Adventure',
+      'image': AppAssets.camping,
+      'ontap': () {
+        Get.to(CategoryPage(
+          category: 'Nature & Adventure',
+        ));
+      }
+    },
+    // {
+    //   'title': 'Beach',
+    //   'image': AppAssets.camping,
+    //   'ontap': () {
+    //     Get.to(CategoryPage(
+    //       category: 'Beach',
+    //     ));
+    //   }
+    // },
+    // {
+    //   'title': 'Beach',
+    //   'image': AppAssets.camping,
+    //   'ontap': () {
+    //     Get.to(CategoryPage(
+    //       category: 'Beach',
+    //     ));
+    //   }
+    // }
   ];
 
   void changeTabIndex(int index) async {
@@ -87,25 +133,6 @@ class DashboardController extends FullLifeCycleController
       }
     });
 
-    // print('ngày hiện tại: ${now.day}');
-    // int message = 0;
-    // account.schedule.map((schedule) {
-    //   final schedulePosts = location.getPostsBySchedule([schedule]);
-    //   // Chuyển đổi chuỗi ngày từ JSON thành DateTime
-    //   DateTime scheduleDate =
-    //       DateFormat('dd-MM-yyyy').parse('${schedule.datetime}');
-
-    //   if (now.year == scheduleDate.year &&
-    //       now.month == scheduleDate.month &&
-    //       now.day == scheduleDate.day) {
-    //     message = 1;
-    //   } else if (now.isAfter(scheduleDate)) {
-    //     message = 0;
-    //   } else {
-    //     message = 2;
-    //   }
-    // }).toList();
-    // //
     pageController =
         PageController(initialPage: tabIndex.value, keepPage: true);
     pages = [
@@ -231,9 +258,9 @@ class DashboardController extends FullLifeCycleController
                     itemCount: categories.length,
                     itemBuilder: (context, index) {
                       return CategoryItem(
-                        title: categories[index]['title'],
-                        image: categories[index]['image'],
-                      );
+                          title: categories[index]['title'],
+                          image: categories[index]['image'],
+                          onTap: categories[index]['ontap']);
                     },
                   ),
                 ),
@@ -478,8 +505,8 @@ class DashboardController extends FullLifeCycleController
 class CategoryItem extends StatelessWidget {
   final String title;
   final String image;
-  late VoidCallback onTap;
-  CategoryItem({required this.title, required this.image});
+  final VoidCallback? onTap;
+  CategoryItem({required this.title, required this.image, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -491,8 +518,9 @@ class CategoryItem extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          onTap;
-          print('object');
+          if (onTap != null) {
+            onTap!();
+          }
         },
         child: Row(
           children: [

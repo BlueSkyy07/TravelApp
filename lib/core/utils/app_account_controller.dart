@@ -21,8 +21,6 @@ class AccountController extends GetxController {
   RxString sex = ''.obs;
   RxString phonenumber = ''.obs;
   RxBool checkreg = false.obs;
-  RxBool checkEditInf = false.obs;
-  RxBool checkEditSec = false.obs;
 
   var schedule = <Schedule>[].obs;
   var favorite = <String>[].obs;
@@ -69,11 +67,6 @@ class AccountController extends GetxController {
   void ChangeLogin() {
     checklogin.value = true;
     print(checklogin.value);
-  }
-
-  void ChangeInf() {
-    checkEditInf.value = !checkEditInf.value;
-    // print(checklogin.value);
   }
 
   // }void ChangeLogin() {
@@ -169,6 +162,21 @@ class AccountController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> UpdateUser(
+      String id, String username, String sex, String phonenumber) async {
+    isLoading.value = true;
+    try {
+      await dataServices().UpdateUser(id, username, sex, phonenumber);
+      // await getPosts(); // Fetch the updated list of postsz
+      print("User updated successfully");
+    } catch (e) {
+      print('Error updating title: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // Future<void> fetchUserById(String userId) async {
   //   try {
   //     final response = await http
