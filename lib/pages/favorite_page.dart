@@ -24,7 +24,7 @@ class FavoritePage extends StatelessWidget {
         ),
       ),
       body: Obx(
-        () => accountController.checklogin.value == true
+        () => (accountController.checklogin.value == true)
             ? Obx(() {
                 final favoritePosts = locationController.posts.where((post) {
                   return accountController.isFavorite(post.id!);

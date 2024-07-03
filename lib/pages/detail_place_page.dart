@@ -427,62 +427,40 @@ class _MyInformationState extends State<MyInformation>
                     SizedBox(
                       height: 25,
                     ),
-                    // SingleChildScrollView(
-                    //   scrollDirection: Axis.horizontal,
-                    //   child: Container(
-                    //     padding: EdgeInsets.symmetric(horizontal: 20),
-                    //     child: Row(
-                    //       children: [
-                    //         InstaImageViewer(
-                    //             child: Container(
-                    //           width: 120,
-                    //           height: 120,
-                    //           clipBehavior: Clip.antiAlias,
-                    //           decoration: BoxDecoration(
-                    //               borderRadius: BorderRadius.circular(20)),
-                    //           child: Image.asset(
-                    //             "Asset/Images/anh1.jpg",
-                    //             fit: BoxFit.cover,
-                    //           ),
-                    //         )),
-                    //         SizedBox(
-                    //           width: 20,
-                    //         ),
-                    //         InstaImageViewer(
-                    //             child: Container(
-                    //           width: 120,
-                    //           height: 120,
-                    //           clipBehavior: Clip.antiAlias,
-                    //           decoration: BoxDecoration(
-                    //               borderRadius: BorderRadius.circular(20)),
-                    //           child: Image.asset(
-                    //             "Asset/Images/anh2.jpg",
-                    //             fit: BoxFit.cover,
-                    //           ),
-                    //         )),
-                    //         SizedBox(
-                    //           width: 20,
-                    //         ),
-                    //         Stack(
-                    //           children: [
-                    //             InstaImageViewer(
-                    //                 child: Container(
-                    //               width: 120,
-                    //               height: 120,
-                    //               clipBehavior: Clip.antiAlias,
-                    //               decoration: BoxDecoration(
-                    //                   borderRadius: BorderRadius.circular(20)),
-                    //               child: Image.asset(
-                    //                 "Asset/Images/anh3.jpg",
-                    //                 fit: BoxFit.cover,
-                    //               ),
-                    //             )),
-                    //           ],
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
+                    // Container(
+                    //     height: 200,
+                    //     width: 200,
+                    //     decoration: BoxDecoration(
+                    //         image: DecorationImage(
+                    //             image: NetworkImage(location.gallery![0])))),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: (location.gallery)!.map((image) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: InstaImageViewer(
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Image.network(
+                                    image,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: 25,
                     ),

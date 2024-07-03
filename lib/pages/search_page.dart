@@ -116,7 +116,9 @@ class _SearchPageState extends State<SearchPage> {
                     }),
                   )
                 : Spacer(), // Spacer pushes the favorites section to the bottom
-            if (!showResults && accountController.checklogin == true)
+            if (!showResults &&
+                accountController.checklogin == true &&
+                accountController.favorite == '')
               Obx(() {
                 final favoritePosts = locationController.posts.where((post) {
                   return accountController.isFavorite(post.id!);

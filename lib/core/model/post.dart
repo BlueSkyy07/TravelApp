@@ -6,17 +6,16 @@ class Post {
   String? location;
   String? image;
   Rating? rating;
-  // List<String>? gallery;
-  Post({
-    this.id,
-    this.title,
-    this.description,
-    this.category,
-    this.location,
-    this.image,
-    this.rating,
-    // this.gallery
-  });
+  List<String>? gallery;
+  Post(
+      {this.id,
+      this.title,
+      this.description,
+      this.category,
+      this.location,
+      this.image,
+      this.rating,
+      this.gallery});
 
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -27,7 +26,7 @@ class Post {
     image = json['image'];
     rating =
         json['rating'] != null ? new Rating.fromJson(json['rating']) : null;
-    // gallery = List<String>.from(json['gallery']);
+    gallery = List<String>.from(json['gallery']);
   }
 
   Map<String, dynamic> toJson() {
@@ -41,7 +40,7 @@ class Post {
     if (this.rating != null) {
       data['rating'] = this.rating!.toJson();
     }
-    // data['gallery'] = this.gallery;
+    data['gallery'] = this.gallery;
 
     return data;
   }
