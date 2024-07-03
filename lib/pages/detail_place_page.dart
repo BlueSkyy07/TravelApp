@@ -551,40 +551,65 @@ class _MyInformationState extends State<MyInformation>
                           isThreeLine: true,
                           trailing: Text("Today"),
                         )),
-                    Obx(() => accountController.checklogin != true
-                        ? ElevatedButton(
-                            onPressed: () {
-                              //chuyển đến trang login
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Center(
-                                      child: Text(
-                                    "Schedule failed",
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  )),
-                                  content: Text("Please Login!. Try again."),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context); // Đóng dialog
-                                      },
-                                      child: Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: Text('book'),
-                          )
-                        : ElevatedButton(
-                            onPressed: () async {
-                              _showDatePicker(context, location.id!);
-                            },
-                            child: Text('book'),
-                          ))
+                    Obx(
+                      () => accountController.checklogin != true
+                          ? InkWell(
+                              onTap: () {
+                                //chuyển đến trang login
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Center(
+                                        child: Text(
+                                      "Schedule failed",
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    content: Text("Please Login!. Try again."),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context); // Đóng dialog
+                                        },
+                                        child: Text("OK"),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 50,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    color: Colors.yellow,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                child: Center(child: Text('Book')),
+                              ),
+                            )
+                          : InkWell(
+                              onTap: () async {
+                                _showDatePicker(context, location.id!);
+                              },
+                              child: Container(
+                                height: 50,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    color: Colors.yellow,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                child: Center(child: Text('Book')),
+                              ),
+                            ),
+                    )
+
+                    // ElevatedButton(
+                    //     onPressed: () async {
+                    //       _showDatePicker(context, location.id!);
+                    //     },
+                    //     child: Text('book'),
+                    //   ))
                   ],
                 );
               })),
